@@ -6,14 +6,13 @@ import { usePathname, useRouter } from "next/navigation";
 import { clearAuthSession } from "@/lib/auth/session.client";
 
 const navItems = [
-  { label: "Dashboard", href: "/dashboard" },
-  { label: "Classes", href: "/classes" },
-  { label: "Students", href: "/students" },
-  { label: "Assignments", href: "/assignments" },
-  { label: "Settings", href: "/settings" },
+  { label: "Overview", href: "/principal/dashboard" },
+  { label: "School", href: "/principal/school" },
+  { label: "Reports", href: "/principal/reports" },
+  { label: "Teachers", href: "/principal/teachers" },
 ];
 
-export default function Sidebar() {
+export default function PrincipalSidebar() {
   const pathname = usePathname();
   const router = useRouter();
 
@@ -24,26 +23,25 @@ export default function Sidebar() {
   }
 
   return (
-    <aside className="w-72 rounded-2xl border border-sky-100 bg-white/80 p-5 shadow-sm backdrop-blur">
-      <div className="mb-6 flex h-[100px]  items-center justify-center gap-2 text-center">
-        <Image src="/main.png" alt="Lumo Teacher Panel" width={50} height={50} />
-        <h1 className="text-2xl font-semibold font-montserrat text-slate-900">
-          Lumo Teacher
+    <aside className="w-72 rounded-2xl border border-violet-100 bg-white/90 p-5 shadow-sm backdrop-blur">
+      <div className="mb-6 flex h-[100px] items-center justify-center gap-2 text-center">
+        <Image src="/main.png" alt="Lumo" width={50} height={50} />
+        <h1 className="text-xl font-semibold font-montserrat text-violet-950">
+          Lumo Principal
         </h1>
       </div>
 
       <nav className="space-y-2">
         {navItems.map((item) => {
           const isActive = pathname === item.href;
-
           return (
             <Link
               key={item.href}
               href={item.href}
               className={
                 isActive
-                  ? "block w-full rounded-xl bg-sky-500 px-4 py-3 text-sm font-medium text-white shadow-sm"
-                  : "block w-full rounded-xl px-4 py-3 text-sm font-medium text-slate-600 transition hover:bg-sky-50 hover:text-sky-700"
+                  ? "block w-full rounded-xl bg-violet-600 px-4 py-3 text-sm font-medium text-white shadow-sm"
+                  : "block w-full rounded-xl px-4 py-3 text-sm font-medium text-slate-600 transition hover:bg-violet-50 hover:text-violet-800"
               }
             >
               {item.label}
@@ -52,7 +50,7 @@ export default function Sidebar() {
         })}
       </nav>
 
-      <div className="mt-8 border-t border-sky-100 pt-4">
+      <div className="mt-8 border-t border-violet-100 pt-4">
         <button
           type="button"
           onClick={logout}
