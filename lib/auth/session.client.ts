@@ -1,8 +1,12 @@
-import { AUTH_COOKIE, ROLE_COOKIE, type AuthRole } from "@/lib/auth/constants";
+import {
+  AUTH_COOKIE,
+  LUMO_TOKEN_KEY,
+  ROLE_COOKIE,
+  type AuthRole,
+} from "@/lib/auth/constants";
 import { parseAuthRoleFromLoginBody } from "@/lib/auth/role-from-response";
 import { extractTokenFromBody } from "@/lib/auth/token";
 
-const TOKEN_STORAGE_KEY = "lumo_token";
 const COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 7; // 7 days
 
 function setBrowserCookie(name: string, value: string) {
@@ -44,7 +48,7 @@ export function persistAuthSession(
   setBrowserCookie(ROLE_COOKIE, role);
 
   try {
-    localStorage.setItem(TOKEN_STORAGE_KEY, token);
+    localStorage.setItem(LUMO_TOKEN_KEY, token);
     sessionStorage.setItem("accessToken", token);
     sessionStorage.setItem("type", role);
   } catch {
@@ -59,7 +63,7 @@ export function clearAuthSession() {
   clearBrowserCookie(ROLE_COOKIE);
 
   try {
-    localStorage.removeItem(TOKEN_STORAGE_KEY);
+    localStorage.removeItem(LUMO_TOKEN_KEY);
     sessionStorage.removeItem("accessToken");
     sessionStorage.removeItem("type");
   } catch {

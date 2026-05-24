@@ -5,6 +5,7 @@ import axios, {
     AxiosResponse,
     InternalAxiosRequestConfig,
   } from "axios";
+import { LUMO_TOKEN_KEY } from "@/lib/auth/constants";
 import { toast } from "sonner";
 
   // const API_BASE_URL = "http://localhost:5050/api";
@@ -47,7 +48,9 @@ import { toast } from "sonner";
     if (typeof window === "undefined") return null;
   
     return (
-      sessionStorage.getItem("accessToken") || localStorage.getItem("accessToken")
+      sessionStorage.getItem("accessToken") ||
+      localStorage.getItem("accessToken") ||
+      localStorage.getItem(LUMO_TOKEN_KEY)
     );
   }
   
@@ -68,6 +71,7 @@ import { toast } from "sonner";
       : localStorage;
   
     storage.setItem("accessToken", token);
+    localStorage.setItem(LUMO_TOKEN_KEY, token);
   }
   function setRefreshToken(token: string) {
     if (typeof window === "undefined") return;
