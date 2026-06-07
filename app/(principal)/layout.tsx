@@ -10,7 +10,7 @@ export default function PrincipalLayout({
       <header className="sticky top-0 z-20 border-b border-violet-100/80 bg-white/85 backdrop-blur-md">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 md:px-8">
           <span className="text-sm font-medium text-slate-500">
-            Lumo school administration
+            Alphores school administration
           </span>
           <span className="rounded-full border border-violet-200 bg-violet-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-violet-800">
             Principal panel

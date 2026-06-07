@@ -1,6 +1,6 @@
-export const AUTH_COOKIE = "lumo_auth";
-export const ROLE_COOKIE = "lumo_role";
+export const AUTH_COOKIE = "Alphores_auth";
+export const ROLE_COOKIE = "Alphores_role";
 /** JWT stored in localStorage for API Authorization headers */
-export const LUMO_TOKEN_KEY = "lumo_token";
+export const Alphores_TOKEN_KEY = "Alphores_token";
 
 export type AuthRole = "principal" | "teacher";

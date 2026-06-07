@@ -1,1 +1,1 @@
-# lumo-teacher-panel
+# Alphores-teacher-panel

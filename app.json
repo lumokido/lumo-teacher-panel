@@ -1,0 +1,15 @@
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "581cf0dc-cc2e-40c9-91dd-c741b806c508"
+      }
+    },
+    "ios": {
+      "bundleIdentifier": "com.anasmohamad.alphoresteacherpanel",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    }
+  }
+}

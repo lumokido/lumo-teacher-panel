@@ -25,8 +25,8 @@ const lavishlyYours = Lavishly_Yours({
 });
 
 export const metadata: Metadata = {
-  title: "Lumo Teacher Panel",
-  description: "Lumo Teacher Panel",
+  title: "Alphores Teacher Panel",
+  description: "Alphores Teacher Panel",
 };
 
 export default function RootLayout({

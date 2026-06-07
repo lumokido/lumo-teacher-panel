@@ -1,6 +1,6 @@
 import {
   AUTH_COOKIE,
-  LUMO_TOKEN_KEY,
+  Alphores_TOKEN_KEY,
   ROLE_COOKIE,
   type AuthRole,
 } from "@/lib/auth/constants";
@@ -48,7 +48,7 @@ export function persistAuthSession(
   setBrowserCookie(ROLE_COOKIE, role);
 
   try {
-    localStorage.setItem(LUMO_TOKEN_KEY, token);
+    localStorage.setItem(Alphores_TOKEN_KEY, token);
     sessionStorage.setItem("accessToken", token);
     sessionStorage.setItem("type", role);
   } catch {
@@ -63,7 +63,7 @@ export function clearAuthSession() {
   clearBrowserCookie(ROLE_COOKIE);
 
   try {
-    localStorage.removeItem(LUMO_TOKEN_KEY);
+    localStorage.removeItem(Alphores_TOKEN_KEY);
     sessionStorage.removeItem("accessToken");
     sessionStorage.removeItem("type");
   } catch {

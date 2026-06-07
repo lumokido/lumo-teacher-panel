@@ -109,14 +109,7 @@ export function StudentForm({
               disabled={busy}
             />
           </Field>
-          <Field label="Marks" className="sm:col-span-1">
-            <Input
-              required
-              value={form.marks}
-              onChange={(e) => setField("marks", e.target.value)}
-              disabled={busy}
-            />
-          </Field>
+      
         </CardContent>
         <CardFooter className="justify-end gap-2 border-t border-sky-100 bg-transparent">
           <Button variant="outline" type="button" render={<Link href="/students" />} disabled={busy}>

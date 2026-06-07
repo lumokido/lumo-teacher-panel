@@ -10,6 +10,7 @@ const navItems = [
   { label: "School", href: "/principal/school" },
   { label: "Reports", href: "/principal/reports" },
   { label: "Teachers", href: "/principal/teachers" },
+  {label : "Students" , href:"/principal/students"}
 ];
 
 export default function PrincipalSidebar() {
@@ -23,11 +24,11 @@ export default function PrincipalSidebar() {
   }
 
   return (
-    <aside className="w-72 rounded-2xl border border-violet-100 bg-white/90 p-5 shadow-sm backdrop-blur">
+    <aside className="w-72 rounded-2xl border border-violet-100 bg-white/90 p-2 shadow-sm backdrop-blur">
       <div className="mb-6 flex h-[100px] items-center justify-center gap-2 text-center">
-        <Image src="/main.png" alt="Lumo" width={50} height={50} />
+        <Image src="/logo.svg" alt="Alphores" width={100} height={100} />
         <h1 className="text-xl font-semibold font-montserrat text-violet-950">
-          Lumo Principal
+          Alphores Principal
         </h1>
       </div>
 

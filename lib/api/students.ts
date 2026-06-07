@@ -9,7 +9,6 @@ export type StudentWriteBody = {
   dateOfBirth: string;
   gender: string;
   studentClass: string;
-  marks: string;
 };
 
 export type StudentRow = StudentWriteBody & {
@@ -38,7 +37,6 @@ export function emptyStudentForm(): StudentWriteBody {
     dateOfBirth: "",
     gender: "Male",
     studentClass: "",
-    marks: "",
   };
 }
 
@@ -52,7 +50,6 @@ export function rowToForm(row: StudentRow): StudentWriteBody {
     dateOfBirth: row.dateOfBirth ?? "",
     gender: row.gender ?? "Male",
     studentClass: row.studentClass ?? "",
-    marks: row.marks ?? "",
   };
 }
 
