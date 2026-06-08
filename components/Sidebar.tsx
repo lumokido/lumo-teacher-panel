@@ -11,6 +11,7 @@ import {
   Users,
   FileText,
   Settings,
+  Clock,
   LogOut
 } from "lucide-react";
 
@@ -19,6 +20,7 @@ const navItems = [
   { label: "Classes", href: "/classes", icon: School },
   { label: "Students", href: "/students", icon: Users },
   { label: "Assignments", href: "/assignments", icon: FileText },
+  { label: "Timetable", href: "/timetable", icon: Clock },
   { label: "Settings", href: "/settings", icon: Settings },
 ];
 

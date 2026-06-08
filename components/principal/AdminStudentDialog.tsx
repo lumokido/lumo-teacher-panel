@@ -128,21 +128,25 @@ export default function AdminStudentDialog({ className, sections, open, onClose 
                 disabled={addMut.isPending}
               />
             </label>
-            <label className="block text-xs font-medium text-slate-600">
+            <div className="block text-xs font-medium text-slate-600 space-y-1">
               Gender
-              <select
-                className="mt-1 w-full rounded-lg border border-violet-200 px-3 py-2 text-sm text-slate-900 outline-none focus:ring-2 focus:ring-violet-300 h-[38px]"
+              <Select
                 value={form.gender}
-                onChange={(e) => setField("gender", e.target.value)}
+                onValueChange={(val) => setField("gender", val || "")}
                 disabled={addMut.isPending}
               >
-                {GENDERS.map((g) => (
-                  <option key={g} value={g}>
-                    {g.charAt(0) + g.slice(1).toLowerCase()}
-                  </option>
-                ))}
-              </select>
-            </label>
+                <SelectTrigger className="w-full rounded-lg border-violet-200 bg-white h-[38px] text-sm">
+                  <SelectValue placeholder="Select gender..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {GENDERS.map((g) => (
+                    <SelectItem key={g} value={g}>
+                      {g.charAt(0) + g.slice(1).toLowerCase()}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
 
           <div className="grid gap-3 sm:grid-cols-3">

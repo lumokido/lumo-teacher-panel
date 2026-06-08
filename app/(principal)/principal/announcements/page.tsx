@@ -4,6 +4,13 @@ import { useState } from "react";
 import { useAnnouncements, useCreateAnnouncement } from "@/hooks/useAnnouncements";
 import { format } from "date-fns";
 import type { AnnouncementType, AnnouncementWriteBody } from "@/lib/api/announcements";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function PrincipalAnnouncementsPage() {
   const { data: announcements = [], isLoading, isError, error, refetch } = useAnnouncements();
@@ -190,18 +197,22 @@ export default function PrincipalAnnouncementsPage() {
                 />
               </label>
 
-              <label className="block text-xs font-semibold text-slate-600">
+              <div className="block text-xs font-semibold text-slate-600 space-y-1.5">
                 Post Type
-                <select
-                  disabled={createMut.isPending}
-                  className="mt-1 w-full rounded-lg border border-violet-200 px-3 py-2.5 text-sm text-slate-950 outline-none focus:ring-2 focus:ring-violet-300 focus:border-violet-400"
+                <Select
                   value={formData.type}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, type: e.target.value as AnnouncementType }))}
+                  onValueChange={(val) => setFormData((prev) => ({ ...prev, type: val as AnnouncementType }))}
+                  disabled={createMut.isPending}
                 >
-                  <option value="ANNOUNCEMENT">Bulletin Announcement</option>
-                  <option value="EVENT">Calendar Event</option>
-                </select>
-              </label>
+                  <SelectTrigger className="w-full rounded-lg border border-violet-200 bg-white h-[38px] text-sm">
+                    <SelectValue placeholder="Select type..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="ANNOUNCEMENT">Bulletin Announcement</SelectItem>
+                    <SelectItem value="EVENT">Calendar Event</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
               <label className="block text-xs font-semibold text-slate-600">
                 Start/Event Date

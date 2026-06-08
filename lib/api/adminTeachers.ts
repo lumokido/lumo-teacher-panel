@@ -17,6 +17,7 @@ export type AdminTeacherWriteBody = {
 };
 
 export type TeacherRow = {
+  id?: number;
   emailId?: string;
   name?: string;
   schoolName?: string;

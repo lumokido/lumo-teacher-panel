@@ -11,17 +11,21 @@ import {
   GraduationCap,
   Calendar,
   Megaphone,
-  LogOut
+  Clock,
+  LogOut,
+  Users,
+  ClipboardList
 } from "lucide-react";
 
 const navItems = [
   { label: "Overview", href: "/principal/dashboard", icon: LayoutDashboard },
   { label: "School", href: "/principal/school", icon: School },
   { label: "Classes", href: "/principal/classes", icon: GraduationCap },
-  // { label: "Reports", href: "/principal/reports", icon: BarChart3 },
-  // { label: "Teachers", href: "/principal/teachers", icon: Users },
+  { label: "Teachers", href: "/principal/teachers", icon: Users },
   { label: "Attendance", href: "/principal/attendance", icon: Calendar },
   { label: "Announcements & Events", href: "/principal/announcements", icon: Megaphone },
+  { label: "Timetable", href: "/principal/timetable", icon: Clock },
+  { label: "Exams", href: "/principal/exams", icon: ClipboardList },
 ];
 
 export default function PrincipalSidebar() {
