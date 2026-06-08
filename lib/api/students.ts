@@ -9,6 +9,8 @@ export type StudentWriteBody = {
   dateOfBirth: string;
   gender: string;
   studentClass: string;
+  sectionName?: string;
+  rollNumber?: string;
 };
 
 export type StudentRow = StudentWriteBody & {
@@ -16,7 +18,7 @@ export type StudentRow = StudentWriteBody & {
   studentId?: number | string;
 };
 
-export function getStudentId(row: StudentRow): string | null {
+export function getStudentId(row: StudentRow | StudentDetailResponse): string | null {
   const id = row.id ?? row.studentId;
   if (id == null || id === "") return null;
   return String(id);
@@ -37,6 +39,8 @@ export function emptyStudentForm(): StudentWriteBody {
     dateOfBirth: "",
     gender: "Male",
     studentClass: "",
+    sectionName: "",
+    rollNumber: "",
   };
 }
 
@@ -50,6 +54,8 @@ export function rowToForm(row: StudentRow): StudentWriteBody {
     dateOfBirth: row.dateOfBirth ?? "",
     gender: row.gender ?? "Male",
     studentClass: row.studentClass ?? "",
+    sectionName: row.sectionName ?? "",
+    rollNumber: row.rollNumber ?? "",
   };
 }
 
@@ -80,5 +86,27 @@ export async function updateStudent(
   body: StudentWriteBody,
 ): Promise<unknown> {
   const res = await api.put(`/api/students/${studentId}`, body);
+  return res.data;
+}
+
+export type StudentDetailResponse = {
+  id?: number | string;
+  studentId?: number | string;
+  firstName: string;
+  lastName: string;
+  middleName: string;
+  mobileNumber: string;
+  parentName: string;
+  dateOfBirth: string;
+  gender: string;
+  studentClass: string;
+  teacherId?: number;
+  teacherName?: string;
+  teacherEmail?: string;
+  teacherMobile?: string;
+};
+
+export async function getStudentDetails(id: string): Promise<StudentDetailResponse> {
+  const res = await api.get(`/api/students/${id}`);
   return res.data;
 }

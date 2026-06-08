@@ -5,12 +5,23 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { clearAuthSession } from "@/lib/auth/session.client";
 
+import {
+  LayoutDashboard,
+  School,
+  GraduationCap,
+  Calendar,
+  Megaphone,
+  LogOut
+} from "lucide-react";
+
 const navItems = [
-  { label: "Overview", href: "/principal/dashboard" },
-  { label: "School", href: "/principal/school" },
-  { label: "Reports", href: "/principal/reports" },
-  { label: "Teachers", href: "/principal/teachers" },
-  {label : "Students" , href:"/principal/students"}
+  { label: "Overview", href: "/principal/dashboard", icon: LayoutDashboard },
+  { label: "School", href: "/principal/school", icon: School },
+  { label: "Classes", href: "/principal/classes", icon: GraduationCap },
+  // { label: "Reports", href: "/principal/reports", icon: BarChart3 },
+  // { label: "Teachers", href: "/principal/teachers", icon: Users },
+  { label: "Attendance", href: "/principal/attendance", icon: Calendar },
+  { label: "Announcements & Events", href: "/principal/announcements", icon: Megaphone },
 ];
 
 export default function PrincipalSidebar() {
@@ -28,7 +39,7 @@ export default function PrincipalSidebar() {
       <div className="mb-6 flex h-[100px] items-center justify-center gap-2 text-center">
         <Image src="/logo.svg" alt="Alphores" width={100} height={100} />
         <h1 className="text-xl font-semibold font-montserrat text-violet-950">
-          Alphores Principal
+          Alphores Director
         </h1>
       </div>
 
@@ -41,11 +52,12 @@ export default function PrincipalSidebar() {
               href={item.href}
               className={
                 isActive
-                  ? "block w-full rounded-xl bg-violet-600 px-4 py-3 text-sm font-medium text-white shadow-sm"
-                  : "block w-full rounded-xl px-4 py-3 text-sm font-medium text-slate-600 transition hover:bg-violet-50 hover:text-violet-800"
+                  ? "flex items-center gap-3 w-full rounded-xl bg-violet-600 px-4 py-3 text-sm font-semibold text-white shadow-md transition-all duration-200"
+                  : "flex items-center gap-3 w-full rounded-xl px-4 py-3 text-sm font-medium text-slate-600 transition-all duration-200 hover:bg-violet-50 hover:text-violet-800 hover:translate-x-1"
               }
             >
-              {item.label}
+              <item.icon className={`h-5 w-5 ${isActive ? "text-white" : "text-slate-400 group-hover:text-violet-600"}`} />
+              <span>{item.label}</span>
             </Link>
           );
         })}
@@ -55,9 +67,10 @@ export default function PrincipalSidebar() {
         <button
           type="button"
           onClick={logout}
-          className="w-full rounded-xl px-4 py-3 text-left text-sm font-medium text-slate-500 transition hover:bg-red-50 hover:text-red-700"
+          className="flex items-center gap-3 w-full rounded-xl px-4 py-3 text-left text-sm font-medium text-slate-500 transition-all duration-200 hover:bg-red-50 hover:text-red-700 hover:translate-x-1"
         >
-          Sign out
+          <LogOut className="h-5 w-5 text-slate-400 group-hover:text-red-600" />
+          <span>Sign out</span>
         </button>
       </div>
     </aside>

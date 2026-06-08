@@ -2,6 +2,7 @@ import {
   addStudent,
   listStudents,
   updateStudent,
+  getStudentDetails,
   type StudentWriteBody,
 } from "@/lib/api/students";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -49,5 +50,13 @@ export function useUpdateStudent(studentId: string) {
       toast.success("Student updated");
     },
     onError: (e) => toast.error(messageFromAxios(e)),
+  });
+}
+
+export function useStudentDetails(studentId: string) {
+  return useQuery({
+    queryKey: [...studentsKey, studentId],
+    queryFn: () => getStudentDetails(studentId),
+    enabled: !!studentId,
   });
 }

@@ -10,11 +10,10 @@ export type AdminTeacherWriteBody = {
   emailId: string;
   passwordHash: string;
   name: string;
-  schoolName: string;
   mobileNumber: string;
   classTeacher: string;
-  classes: string[];
-  subjects: string[];
+  classes: string;
+  subjects: string;
 };
 
 export type TeacherRow = {
@@ -23,8 +22,8 @@ export type TeacherRow = {
   schoolName?: string;
   mobileNumber?: string;
   classTeacher?: string;
-  classes?: string[];
-  subjects?: string[];
+  classes?: string;
+  subjects?: string;
 };
 
 

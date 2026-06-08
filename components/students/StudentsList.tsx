@@ -1,11 +1,9 @@
 "use client";
 
 import { DataTable } from "@/components/ui/data-table";
-import { Button } from "@/components/ui/button";
 import { getStudentId } from "@/lib/api/students";
 import { studentsTableColumns } from "@/lib/tables/students-table.config";
 import { useStudentsList } from "@/hooks/useStudents";
-import Link from "next/link";
 
 export default function StudentsList() {
   const { data: students = [], isLoading, isError, error, refetch } =
@@ -27,12 +25,9 @@ export default function StudentsList() {
             Student Directory
           </h2>
           <p className="mt-2 max-w-xl text-slate-600">
-            Track students, attendance, and performance in one place.
+            View students, attendance, and performance. Contact your admin to add or edit students.
           </p>
         </div>
-        <Button className="bg-sky-600 hover:bg-sky-700" render={<Link href="/students/add" />}>
-          Add student
-        </Button>
       </div>
 
       {listErr ? (
@@ -52,7 +47,7 @@ export default function StudentsList() {
         columns={studentsTableColumns}
         data={students}
         isLoading={isLoading}
-        emptyMessage="No students yet. Add your first student to get started."
+        emptyMessage="No students yet."
         rowKey={(row, index) => getStudentId(row) ?? `row-${index}`}
       />
     </div>

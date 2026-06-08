@@ -109,6 +109,15 @@ export function StudentForm({
               disabled={busy}
             />
           </Field>
+          <Field label="Roll Number" className="sm:col-span-1">
+            <Input
+              required
+              value={form.rollNumber}
+              onChange={(e) => setField("rollNumber", e.target.value)}
+              placeholder="e.g. 101"
+              disabled={busy}
+            />
+          </Field>
       
         </CardContent>
         <CardFooter className="justify-end gap-2 border-t border-sky-100 bg-transparent">

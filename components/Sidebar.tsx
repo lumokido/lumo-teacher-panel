@@ -5,12 +5,21 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { clearAuthSession } from "@/lib/auth/session.client";
 
+import {
+  LayoutDashboard,
+  School,
+  Users,
+  FileText,
+  Settings,
+  LogOut
+} from "lucide-react";
+
 const navItems = [
-  { label: "Dashboard", href: "/dashboard" },
-  { label: "Classes", href: "/classes" },
-  { label: "Students", href: "/students" },
-  { label: "Assignments", href: "/assignments" },
-  { label: "Settings", href: "/settings" },
+  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { label: "Classes", href: "/classes", icon: School },
+  { label: "Students", href: "/students", icon: Users },
+  { label: "Assignments", href: "/assignments", icon: FileText },
+  { label: "Settings", href: "/settings", icon: Settings },
 ];
 
 export default function Sidebar() {
@@ -42,11 +51,12 @@ export default function Sidebar() {
               href={item.href}
               className={
                 isActive
-                  ? "block w-full rounded-xl bg-sky-500 px-4 py-3 text-sm font-medium text-white shadow-sm"
-                  : "block w-full rounded-xl px-4 py-3 text-sm font-medium text-slate-600 transition hover:bg-sky-50 hover:text-sky-700"
+                  ? "flex items-center gap-3 w-full rounded-xl bg-sky-500 px-4 py-3 text-sm font-semibold text-white shadow-md transition-all duration-200"
+                  : "flex items-center gap-3 w-full rounded-xl px-4 py-3 text-sm font-medium text-slate-600 transition-all duration-200 hover:bg-sky-50 hover:text-sky-700 hover:translate-x-1"
               }
             >
-              {item.label}
+              <item.icon className={`h-5 w-5 ${isActive ? "text-white" : "text-slate-400 group-hover:text-sky-600"}`} />
+              <span>{item.label}</span>
             </Link>
           );
         })}
@@ -56,9 +66,10 @@ export default function Sidebar() {
         <button
           type="button"
           onClick={logout}
-          className="w-full rounded-xl px-4 py-3 text-left text-sm font-medium text-slate-500 transition hover:bg-red-50 hover:text-red-700"
+          className="flex items-center gap-3 w-full rounded-xl px-4 py-3 text-left text-sm font-medium text-slate-500 transition-all duration-200 hover:bg-red-50 hover:text-red-700 hover:translate-x-1"
         >
-          Sign out
+          <LogOut className="h-5 w-5 text-slate-400 group-hover:text-red-600" />
+          <span>Sign out</span>
         </button>
       </div>
     </aside>
