@@ -46,8 +46,8 @@ export default function LoginScreen() {
           <div className="mb-8 flex flex-col items-center text-center">
             <div className="mb-5 flex h-28 w-28 items-center justify-center rounded-3xl bg-white shadow-md ring-1 ring-sky-100">
               <Image
-                src="/main.png"
-                alt="Alphores"
+                src="/image.png"
+                alt="Vignan"
                 width={96}
                 height={96}
                 className="h-20 w-20 object-contain"
@@ -55,7 +55,7 @@ export default function LoginScreen() {
               />
             </div>
             <p className="text-sm font-medium uppercase tracking-widest text-sky-600">
-              Alphores School
+              VIgnan 
             </p>
             <h1 className="mt-2 font-montserrat text-3xl font-bold text-slate-900">
               Welcome back

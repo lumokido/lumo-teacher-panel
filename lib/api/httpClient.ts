@@ -10,7 +10,9 @@ import { toast } from "sonner";
 
   // const API_BASE_URL = "http://localhost:5050/api";
   
-   const API_BASE_URL = "http://localhost:8080";
+  //  const API_BASE_URL = "http://localhost:8080";
+   const API_BASE_URL = "https://java-production-a727.up.railway.app";
+
   
   /**
    * Main API instance

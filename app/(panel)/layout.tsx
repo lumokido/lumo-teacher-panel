@@ -10,7 +10,7 @@ export default function PanelLayout({
       <header className="sticky top-0 z-20 border-b border-sky-100/80 bg-white/85 backdrop-blur-md">
         <div className="flex items-center justify-between gap-4 px-4 py-3 md:px-8">
           <span className="text-sm font-medium text-slate-500">
-            Alphores teacher workspace
+            Vignan teacher workspace
           </span>
           <span className="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-sky-800">
             Teacher panel
