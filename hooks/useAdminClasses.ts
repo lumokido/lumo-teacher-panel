@@ -6,6 +6,7 @@ import {
   listSectionsByClassId,
   listStudentsByClassId,
   listStudentsByClassAndSectionId,
+  getMyAssignedClasses,
 } from "@/lib/api/adminClasses";
 import { addStudent, type StudentWriteBody } from "@/lib/api/students";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -110,3 +111,11 @@ export function useAddStudentToClass(className: string) {
     onError: (e) => toast.error(messageFromAxios(e)),
   });
 }
+
+export function useMyAssignedClasses() {
+  return useQuery({
+    queryKey: ["admin", "myAssignedClasses"],
+    queryFn: getMyAssignedClasses,
+  });
+}
+

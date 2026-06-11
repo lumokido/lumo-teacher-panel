@@ -14,7 +14,8 @@ import {
   Clock,
   LogOut,
   Users,
-  ClipboardList
+  ClipboardList,
+  BookOpen
 } from "lucide-react";
 
 const navItems = [
@@ -23,6 +24,7 @@ const navItems = [
   { label: "Classes", href: "/principal/classes", icon: GraduationCap },
   { label: "Teachers", href: "/principal/teachers", icon: Users },
   { label: "Attendance", href: "/principal/attendance", icon: Calendar },
+  { label: "Homework", href: "/principal/homework", icon: BookOpen },
   { label: "Announcements & Events", href: "/principal/announcements", icon: Megaphone },
   { label: "Timetable", href: "/principal/timetable", icon: Clock },
   { label: "Exams", href: "/principal/exams", icon: ClipboardList },

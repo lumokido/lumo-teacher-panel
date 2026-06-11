@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, Suspense } from "react";
-import { useClassesList, useSectionsByClassId } from "@/hooks/useAdminClasses";
+import { useClassesList, useSectionsByClassId, useMyAssignedClasses } from "@/hooks/useAdminClasses";
 import type { ClassItem } from "@/lib/api/adminClasses";
 import { format } from "date-fns";
 import Link from "next/link";
@@ -15,7 +15,26 @@ function ClassesPageContent() {
   // Get date from query params or default to today
   const dateParam = searchParams.get("date") || format(new Date(), "yyyy-MM-dd");
   
-  const { data: classes = [], isLoading } = useClassesList();
+  const { data: classes = [], isLoading: classesLoading } = useClassesList();
+  const { data: assignedData, isLoading: assignedLoading } = useMyAssignedClasses();
+
+  const isLoading = classesLoading || assignedLoading;
+
+  const filteredClasses = useMemo(() => {
+    const isAdmin = typeof window !== "undefined" && sessionStorage.getItem("type") === "principal";
+    if (isAdmin) return classes;
+
+    if (!assignedData) return [];
+    const homeroom = assignedData.homeroomClass;
+    const assigned = assignedData.assignedClasses || [];
+    
+    return classes.filter((cls) => {
+      const name = cls.name.trim().toLowerCase();
+      const isHomeroom = homeroom ? homeroom.trim().toLowerCase() === name : false;
+      const isAssigned = assigned.some(c => c.trim().toLowerCase() === name);
+      return isHomeroom || isAssigned;
+    });
+  }, [classes, assignedData]);
 
   function handleDateChange(newDate: string) {
     const params = new URLSearchParams(searchParams.toString());
@@ -30,10 +49,10 @@ function ClassesPageContent() {
         <div>
           <p className="mb-2 text-sm font-medium text-sky-600">Classes</p>
           <h2 className="font-montserrat text-3xl font-semibold text-slate-900">
-            Class Directory
+            My Classes
           </h2>
           <p className="mt-2 text-slate-600">
-            Select a class and section to manage and mark daily student attendance.
+            Select an assigned class and section to manage and mark daily student attendance.
           </p>
         </div>
 
@@ -56,19 +75,19 @@ function ClassesPageContent() {
             Loading classes...
           </div>
         </div>
-      ) : classes.length === 0 ? (
+      ) : filteredClasses.length === 0 ? (
         <div className="rounded-2xl border-2 border-dashed border-sky-200 bg-sky-50/25 px-6 py-16 text-center">
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-sky-100">
             <School className="h-8 w-8 text-sky-500" />
           </div>
-          <p className="text-lg font-semibold text-slate-800">No classes found</p>
+          <p className="text-lg font-semibold text-slate-800">No classes assigned</p>
           <p className="mt-1 text-sm text-slate-500">
-            Contact your administrator to set up classes.
+            You do not have any assigned classes or homeroom class at the moment.
           </p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {classes.map((cls) => (
+          {filteredClasses.map((cls) => (
             <ClassCard key={cls.id} classItem={cls} date={dateParam} />
           ))}
         </div>
@@ -76,6 +95,7 @@ function ClassesPageContent() {
     </div>
   );
 }
+
 
 function ClassCard({ classItem, date }: { classItem: ClassItem; date: string }) {
   const { data: sections = [], isLoading } = useSectionsByClassId(classItem.id);

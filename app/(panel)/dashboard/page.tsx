@@ -1,10 +1,18 @@
 "use client";
 
 import { useAnnouncements } from "@/hooks/useAnnouncements";
+import { useMyHomeroomStats } from "@/hooks/useAttendance";
+import { useMyAssignedClasses } from "@/hooks/useAdminClasses";
 import { format } from "date-fns";
+import { Users, UserCheck, UserX, Percent, CheckCircle, Loader2 } from "lucide-react";
 
 export default function DashboardPage() {
-  const { data: announcements = [], isLoading } = useAnnouncements();
+  const { data: announcements = [], isLoading: announcementsLoading } = useAnnouncements();
+  const { data: assignedData, isLoading: assignedLoading } = useMyAssignedClasses();
+  
+  // Use today's date formatted as YYYY-MM-DD
+  const todayStr = format(new Date(), "yyyy-MM-dd");
+  const { data: stats, isLoading: statsLoading } = useMyHomeroomStats(todayStr);
 
   // Split into announcements and events
   const bulletins = announcements.filter((a) => a.type === "ANNOUNCEMENT");
@@ -23,6 +31,95 @@ export default function DashboardPage() {
         </p>
       </div>
 
+      {/* Homeroom Attendance Stats */}
+      {assignedLoading || statsLoading ? (
+        <div className="flex h-32 items-center justify-center rounded-2xl border border-sky-100 bg-white shadow-sm">
+          <div className="flex items-center gap-2 text-slate-500">
+            <Loader2 className="h-5 w-5 animate-spin text-sky-500" />
+            <span>Loading homeroom stats...</span>
+          </div>
+        </div>
+      ) : assignedData?.homeroomClass ? (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+            <h3 className="font-montserrat text-lg font-bold text-slate-800 flex flex-wrap items-center gap-2">
+              <span className="rounded-lg bg-sky-50 px-3 py-1 text-sm font-semibold text-sky-700">
+                Homeroom: {assignedData.homeroomClass}
+              </span>
+              <span className="text-slate-500 text-sm font-normal">Today's Attendance Overview ({format(new Date(), "MMMM dd, yyyy")})</span>
+            </h3>
+          </div>
+          
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+            {/* Total Students */}
+            <div className="rounded-xl border border-slate-100 bg-white p-4 shadow-sm flex items-center gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
+                <Users className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Total Students</p>
+                <p className="text-xl font-extrabold text-slate-800">{stats?.totalStudents ?? 0}</p>
+              </div>
+            </div>
+
+            {/* Total Marked */}
+            <div className="rounded-xl border border-slate-100 bg-white p-4 shadow-sm flex items-center gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
+                <CheckCircle className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Marked</p>
+                <p className="text-xl font-extrabold text-slate-800">
+                  {stats?.totalMarked ?? 0} / {stats?.totalStudents ?? 0}
+                </p>
+              </div>
+            </div>
+
+            {/* Present */}
+            <div className="rounded-xl border border-slate-100 bg-white p-4 shadow-sm flex items-center gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
+                <UserCheck className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Present</p>
+                <p className="text-xl font-extrabold text-slate-800">{stats?.totalPresent ?? 0}</p>
+              </div>
+            </div>
+
+            {/* Absent */}
+            <div className="rounded-xl border border-slate-100 bg-white p-4 shadow-sm flex items-center gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-rose-50 text-rose-600">
+                <UserX className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Absent</p>
+                <p className="text-xl font-extrabold text-slate-800">{stats?.totalAbsent ?? 0}</p>
+              </div>
+            </div>
+
+            {/* Attendance Rate */}
+            <div className="col-span-2 md:col-span-1 rounded-xl border border-slate-100 bg-white p-4 shadow-sm flex items-center gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-sky-50 text-sky-600">
+                <Percent className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Attendance Rate</p>
+                <p className="text-xl font-extrabold text-slate-800">
+                  {stats?.totalStudents && stats.totalStudents > 0
+                    ? Math.round((stats.totalPresent / stats.totalStudents) * 100)
+                    : 0}%
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50/50 p-4 text-center text-sm text-slate-500">
+          No homeroom class assigned to your profile.
+        </div>
+      )}
+
+
       {/* Grid Layout */}
       <div className="grid gap-8 lg:grid-cols-3">
         {/* Left/Main Column: Bulletin Board */}
@@ -36,7 +133,7 @@ export default function DashboardPage() {
             </h3>
           </div>
 
-          {isLoading ? (
+          {announcementsLoading ? (
             <div className="py-12 text-center text-slate-400">
               <div className="mx-auto mb-3 h-7 w-7 animate-spin rounded-full border-2 border-sky-200 border-t-sky-600" />
               Loading bulletins...
@@ -75,7 +172,7 @@ export default function DashboardPage() {
             </h3>
           </div>
 
-          {isLoading ? (
+          {announcementsLoading ? (
             <div className="py-12 text-center text-slate-400">
               <div className="mx-auto mb-3 h-7 w-7 animate-spin rounded-full border-2 border-indigo-200 border-t-indigo-600" />
               Loading events...
@@ -111,6 +208,7 @@ export default function DashboardPage() {
           )}
         </div>
       </div>
+
     </div>
   );
 }

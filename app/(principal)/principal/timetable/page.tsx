@@ -57,6 +57,8 @@ export default function PrincipalTimetablePage() {
 
   // Modal State
   const [showModal, setShowModal] = useState(false);
+  const [applyToAllDays, setApplyToAllDays] = useState(false);
+  const [isSavingAll, setIsSavingAll] = useState(false);
   const [modalData, setModalData] = useState<{
     day: string;
     period: number;
@@ -97,6 +99,7 @@ export default function PrincipalTimetablePage() {
   function handleCellClick(day: string, period: number) {
     if (!selectedClassId || !selectedSectionId) return;
 
+    setApplyToAllDays(false);
     const existing = timetableMap.get(`${day}-${period}`);
     setModalData({
       day,
@@ -107,26 +110,45 @@ export default function PrincipalTimetablePage() {
     setShowModal(true);
   }
 
-  function handleSave(e: React.FormEvent) {
+  async function handleSave(e: React.FormEvent) {
     e.preventDefault();
     if (!selectedClassId || !selectedSectionId || !modalData.subject.trim() || !modalData.teacherId) return;
 
-    saveMut.mutate({
+    const basePayload = {
       classId: selectedClassId as number,
       sectionId: selectedSectionId as number,
-      day: modalData.day,
       period: modalData.period,
       subject: modalData.subject.trim(),
       teacherId: modalData.teacherId as number,
-    }, {
-      onSuccess: () => {
-        setShowModal(false);
-        void refetchTimetable();
+    };
+
+    try {
+      if (applyToAllDays) {
+        setIsSavingAll(true);
+        // Save for all days sequentially
+        for (const d of DAYS) {
+          await saveMut.mutateAsync({
+            ...basePayload,
+            day: d,
+          });
+        }
+      } else {
+        await saveMut.mutateAsync({
+          ...basePayload,
+          day: modalData.day,
+        });
       }
-    });
+      setShowModal(false);
+      void refetchTimetable();
+    } catch {
+      // Errors are already toasted in saveMut's onError callback
+    } finally {
+      setIsSavingAll(false);
+    }
   }
 
   const isLoading = classesLoading || teachersLoading;
+  const isPending = saveMut.isPending || isSavingAll;
 
   return (
     <div className="space-y-8">
@@ -303,8 +325,8 @@ export default function PrincipalTimetablePage() {
                   required
                   list="subjects-list"
                   placeholder="e.g. Mathematics"
-                  disabled={saveMut.isPending}
-                  className="mt-1 w-full rounded-lg border border-violet-200 px-3 py-2 text-sm text-slate-950 placeholder-slate-400 outline-none focus:ring-2 focus:ring-violet-300 focus:border-violet-400"
+                  disabled={isPending}
+                  className="mt-1 w-full rounded-lg border border-violet-200 px-3 py-2 text-sm text-slate-955 placeholder-slate-400 outline-none focus:ring-2 focus:ring-violet-300 focus:border-violet-400"
                   value={modalData.subject}
                   onChange={(e) => setModalData((prev) => ({ ...prev, subject: e.target.value }))}
                 />
@@ -321,7 +343,7 @@ export default function PrincipalTimetablePage() {
                 <Select
                   value={modalData.teacherId ? String(modalData.teacherId) : ""}
                   onValueChange={(val) => setModalData((prev) => ({ ...prev, teacherId: val ? parseInt(val, 10) : "" }))}
-                  disabled={saveMut.isPending}
+                  disabled={isPending}
                 >
                   <SelectTrigger className="w-full rounded-lg border border-violet-200 bg-white h-[38px] text-sm">
                     <SelectValue placeholder="Select a Teacher">
@@ -341,21 +363,36 @@ export default function PrincipalTimetablePage() {
                 </Select>
               </div>
 
+              {/* Apply to All Days Checkbox */}
+              <div className="flex items-center gap-2.5 pt-1.5 border-t border-slate-50">
+                <input
+                  type="checkbox"
+                  id="apply-all-days"
+                  disabled={isPending}
+                  checked={applyToAllDays}
+                  onChange={(e) => setApplyToAllDays(e.target.checked)}
+                  className="h-4.5 w-4.5 rounded border-violet-300 text-violet-600 focus:ring-violet-300 cursor-pointer accent-violet-600"
+                />
+                <label htmlFor="apply-all-days" className="text-xs font-semibold text-slate-600 cursor-pointer select-none">
+                  Apply this subject & teacher to Period {modalData.period} on all days (Mon - Sat)
+                </label>
+              </div>
+
               <div className="flex justify-end gap-3 pt-2">
                 <button
                   type="button"
                   onClick={closeModal}
-                  disabled={saveMut.isPending}
+                  disabled={isPending}
                   className="rounded-xl border border-violet-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-violet-50 transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  disabled={saveMut.isPending || !modalData.subject.trim() || !modalData.teacherId}
+                  disabled={isPending || !modalData.subject.trim() || !modalData.teacherId}
                   className="rounded-xl bg-violet-600 px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-violet-700 disabled:opacity-60 transition-all active:scale-[0.98]"
                 >
-                  {saveMut.isPending ? "Saving..." : "Save Assignment"}
+                  {isPending ? "Saving..." : "Save Assignment"}
                 </button>
               </div>
             </form>

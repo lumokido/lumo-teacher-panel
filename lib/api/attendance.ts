@@ -57,3 +57,18 @@ export async function getAttendanceHistory(date?: string): Promise<AttendanceHis
   const res = await api.get(url);
   return res.data;
 }
+
+export type HomeroomStats = {
+  date: string;
+  totalStudents: number;
+  totalMarked: number;
+  totalPresent: number;
+  totalAbsent: number;
+};
+
+export async function getMyHomeroomStats(date?: string): Promise<HomeroomStats> {
+  const url = date ? `/api/attendance/my-homeroom-stats?date=${encodeURIComponent(date)}` : "/api/attendance/my-homeroom-stats";
+  const res = await api.get(url);
+  return res.data;
+}
+

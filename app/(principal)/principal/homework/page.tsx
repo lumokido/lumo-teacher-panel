@@ -1,12 +1,11 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
-import QuizzesList from "@/components/quizzes/QuizzesList";
-import { useClassesList, useSectionsByClassId, useMyAssignedClasses } from "@/hooks/useAdminClasses";
+import { useState, useMemo, useEffect, Suspense } from "react";
+import { useClassesList, useSectionsByClassId } from "@/hooks/useAdminClasses";
 import { useAssignmentsByClass, useAssignmentsByClassAndSection } from "@/hooks/useAssignments";
 import Link from "next/link";
 import { format } from "date-fns";
-import { School, Calendar, FileText, Plus, Loader2, ArrowRight, Eye } from "lucide-react";
+import { School, Calendar, FileText, Plus, Loader2, Eye } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -15,73 +14,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-export default function AssignmentsPage() {
-  const [activeTab, setActiveTab] = useState<"quizzes" | "homework">("quizzes");
-
-  return (
-    <div className="space-y-8">
-      {/* Tab Switcher */}
-      <div className="flex border-b border-slate-100">
-        <button
-          onClick={() => setActiveTab("quizzes")}
-          className={`px-6 py-3.5 text-sm font-semibold border-b-2 transition-all cursor-pointer ${
-            activeTab === "quizzes"
-              ? "border-sky-600 text-sky-600"
-              : "border-transparent text-slate-500 hover:text-slate-800"
-          }`}
-        >
-          Quizzes Center
-        </button>
-        <button
-          onClick={() => setActiveTab("homework")}
-          className={`px-6 py-3.5 text-sm font-semibold border-b-2 transition-all cursor-pointer ${
-            activeTab === "homework"
-              ? "border-sky-600 text-sky-600"
-              : "border-transparent text-slate-500 hover:text-slate-800"
-          }`}
-        >
-          Daily Homework logs
-        </button>
-      </div>
-
-      {activeTab === "quizzes" ? (
-        <QuizzesList />
-      ) : (
-        <HomeworkCenter />
-      )}
-    </div>
-  );
-}
-
-function HomeworkCenter() {
+function HomeworkCenterContent() {
   const { data: classes = [], isLoading: classesLoading } = useClassesList();
-  const { data: assignedData, isLoading: assignedLoading } = useMyAssignedClasses();
   
   const [selectedClassId, setSelectedClassId] = useState<number | "">("");
   const [selectedSectionId, setSelectedSectionId] = useState<number | "">("");
 
-  const filteredClasses = useMemo(() => {
-    const isAdmin = typeof window !== "undefined" && sessionStorage.getItem("type") === "principal";
-    if (isAdmin) return classes;
-
-    if (!assignedData) return [];
-    const homeroom = assignedData.homeroomClass;
-    const assigned = assignedData.assignedClasses || [];
-    
-    return classes.filter((cls) => {
-      const name = cls.name.trim().toLowerCase();
-      const isHomeroom = homeroom ? homeroom.trim().toLowerCase() === name : false;
-      const isAssigned = assigned.some(c => c.trim().toLowerCase() === name);
-      return isHomeroom || isAssigned;
-    });
-  }, [classes, assignedData]);
-
   // Pre-select the first class if list loaded and none selected yet
   useEffect(() => {
-    if (filteredClasses.length > 0 && !selectedClassId) {
-      setSelectedClassId(filteredClasses[0].id);
+    if (classes.length > 0 && !selectedClassId) {
+      setSelectedClassId(classes[0].id);
     }
-  }, [filteredClasses, selectedClassId]);
+  }, [classes, selectedClassId]);
 
   const { data: sections = [], isLoading: sectionsLoading } = useSectionsByClassId(
     selectedClassId ? (selectedClassId as number) : undefined
@@ -98,7 +42,7 @@ function HomeworkCenter() {
   );
 
   const assignments = selectedSectionId ? sectionAssignments : allAssignments;
-  const isLoading = classesLoading || assignedLoading || (selectedClassId ? (selectedSectionId ? sectionLoading : allLoading) : false);
+  const isLoading = classesLoading || (selectedClassId ? (selectedSectionId ? sectionLoading : allLoading) : false);
 
   function formatDateString(dateStr: string) {
     try {
@@ -115,17 +59,17 @@ function HomeworkCenter() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
-          <p className="mb-2 text-sm font-medium text-sky-600">Homework Center</p>
+          <p className="mb-2 text-sm font-medium text-violet-600">Homework Center</p>
           <h2 className="font-montserrat text-3xl font-semibold text-slate-900">
             Daily Homework logs
           </h2>
           <p className="mt-2 max-w-xl text-slate-600">
-            Publish and manage homework tasks, view class progress, and attach scanned worksheets.
+            Publish and manage homework tasks across all classes and sections.
           </p>
         </div>
         <Link
-          href="/assignments/add-homework"
-          className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-sky-600 px-5 py-3 text-sm font-semibold text-white shadow-md hover:bg-sky-700 active:scale-[0.98] transition-all"
+          href="/principal/homework/add"
+          className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-violet-600 px-5 py-3 text-sm font-semibold text-white shadow-md hover:bg-violet-700 active:scale-[0.98] transition-all cursor-pointer"
         >
           <Plus className="h-4.5 w-4.5" />
           Publish Homework
@@ -133,24 +77,24 @@ function HomeworkCenter() {
       </div>
 
       {/* Class/Section Select Filter */}
-      <div className="flex flex-wrap items-center gap-4 border border-sky-100 bg-white p-5 rounded-2xl shadow-sm">
+      <div className="flex flex-wrap items-center gap-4 border border-violet-100 bg-white p-5 rounded-2xl shadow-sm">
         <div className="space-y-1.5">
           <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">Class</label>
           <Select
-            disabled={classesLoading || assignedLoading}
+            disabled={classesLoading}
             value={selectedClassId ? String(selectedClassId) : ""}
             onValueChange={(val) => {
               setSelectedClassId(val ? parseInt(val, 10) : "");
               setSelectedSectionId("");
             }}
           >
-            <SelectTrigger className="w-[200px] rounded-xl border-sky-200 bg-white h-[38px] text-sm">
-              <SelectValue placeholder={assignedLoading ? "Loading..." : "Select a Class"}>
-                {(val) => val ? filteredClasses.find((c) => String(c.id) === String(val))?.name : undefined}
+            <SelectTrigger className="w-[200px] rounded-xl border-violet-200 bg-white h-[38px] text-sm">
+              <SelectValue placeholder="Select a Class">
+                {(val) => val ? classes.find((c) => String(c.id) === String(val))?.name : undefined}
               </SelectValue>
             </SelectTrigger>
             <SelectContent>
-              {filteredClasses.map((c) => (
+              {classes.map((c) => (
                 <SelectItem key={c.id} value={String(c.id)}>
                   {c.name}
                 </SelectItem>
@@ -166,7 +110,7 @@ function HomeworkCenter() {
             value={selectedSectionId ? String(selectedSectionId) : ""}
             onValueChange={(val) => setSelectedSectionId(val ? parseInt(val, 10) : "")}
           >
-            <SelectTrigger className="w-[200px] rounded-xl border-sky-200 bg-white h-[38px] text-sm">
+            <SelectTrigger className="w-[200px] rounded-xl border-violet-200 bg-white h-[38px] text-sm">
               <SelectValue placeholder="All Sections">
                 {(val) => val ? sections.find((s) => String(s.id) === String(val))?.name : undefined}
               </SelectValue>
@@ -184,28 +128,24 @@ function HomeworkCenter() {
 
       {/* Homework List Grid */}
       {!selectedClassId ? (
-        <div className="rounded-2xl border-2 border-dashed border-sky-200 bg-sky-50/20 px-6 py-16 text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-sky-100">
-            <School className="h-8 w-8 text-sky-600" />
+        <div className="rounded-2xl border-2 border-dashed border-violet-200 bg-violet-50/20 px-6 py-16 text-center">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-violet-100">
+            <School className="h-8 w-8 text-violet-600" />
           </div>
-          <p className="text-lg font-semibold text-slate-800">
-            {!assignedLoading && filteredClasses.length === 0 ? "No classes assigned" : "Select a Class"}
-          </p>
+          <p className="text-lg font-semibold text-slate-800">Select a Class</p>
           <p className="mt-1 text-sm text-slate-500">
-            {!assignedLoading && filteredClasses.length === 0
-              ? "You do not have any assigned classes or homeroom class to view homework."
-              : "Choose a class and section from the filters above to view scheduled homework."}
+            Choose a class and section from the filters above to view scheduled homework.
           </p>
         </div>
       ) : isLoading ? (
         <div className="py-20 text-center text-slate-500">
-          <Loader2 className="mx-auto mb-3 h-8 w-8 animate-spin text-sky-600" />
+          <Loader2 className="mx-auto mb-3 h-8 w-8 animate-spin text-violet-600" />
           Loading homework assignments...
         </div>
       ) : assignments.length === 0 ? (
-        <div className="rounded-2xl border-2 border-dashed border-sky-200 bg-sky-50/20 px-6 py-16 text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-sky-100">
-            <FileText className="h-8 w-8 text-sky-600" />
+        <div className="rounded-2xl border-2 border-dashed border-violet-200 bg-violet-50/20 px-6 py-16 text-center">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-violet-100">
+            <FileText className="h-8 w-8 text-violet-600" />
           </div>
           <p className="text-lg font-semibold text-slate-800">No homework assignments found</p>
           <p className="mt-1 text-sm text-slate-500">
@@ -217,11 +157,11 @@ function HomeworkCenter() {
           {assignments.map((item) => (
             <div
               key={item.id}
-              className="rounded-2xl border border-sky-100 bg-white p-6 shadow-sm flex flex-col hover:shadow-md hover:border-sky-200 transition-all duration-200 relative overflow-hidden"
+              className="rounded-2xl border border-violet-100 bg-white p-6 shadow-sm flex flex-col hover:shadow-md hover:border-violet-200 transition-all duration-200 relative overflow-hidden"
             >
               {/* Due Date Indicator Badge */}
               <div className="mb-4 flex items-center justify-between border-b pb-3 border-slate-50">
-                <span className="rounded-full bg-sky-50 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-sky-700">
+                <span className="rounded-full bg-violet-50 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-violet-700">
                   {item.section ? `Section ${item.section.name}` : "All Sections"}
                 </span>
                 <span className="text-xs font-semibold text-slate-400 flex items-center gap-1">
@@ -262,5 +202,20 @@ function HomeworkCenter() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function HomeworkCenter() {
+  return (
+    <Suspense fallback={
+      <div className="flex h-96 items-center justify-center rounded-2xl border border-violet-100 bg-white">
+        <div className="flex flex-col items-center text-slate-500">
+          <Loader2 className="mb-3 h-8 w-8 animate-spin text-violet-600" />
+          Loading homework logs...
+        </div>
+      </div>
+    }>
+      <HomeworkCenterContent />
+    </Suspense>
   );
 }

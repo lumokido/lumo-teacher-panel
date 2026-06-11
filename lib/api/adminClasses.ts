@@ -103,3 +103,14 @@ export async function listStudentsByClassAndSectionId(
   const res = await api.get(`/api/students/class/${classId}/section/${sectionId}`);
   return unwrapStudentList(res.data);
 }
+
+export type AssignedClassesResponse = {
+  homeroomClass?: string | null;
+  assignedClasses: string[];
+};
+
+export async function getMyAssignedClasses(): Promise<AssignedClassesResponse> {
+  const res = await api.get("/api/admin/my-assigned-classes");
+  return res.data;
+}
+

@@ -3,6 +3,7 @@ import {
   getStudentAttendanceHistory,
   getAttendanceStats,
   getAttendanceHistory,
+  getMyHomeroomStats,
   type MarkAttendancePayload,
 } from "@/lib/api/attendance";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -14,6 +15,7 @@ export const attendanceKeys = {
   studentHistory: (studentId: string) => ["attendance", "student", studentId] as const,
   stats: (date?: string) => ["attendance", "stats", date] as const,
   history: (date?: string) => ["attendance", "history", date] as const,
+  myHomeroomStats: (date?: string) => ["attendance", "myHomeroomStats", date] as const,
 };
 
 function messageFromAxios(err: unknown): string {
@@ -60,3 +62,11 @@ export function useAttendanceHistory(date?: string) {
     queryFn: () => getAttendanceHistory(date),
   });
 }
+
+export function useMyHomeroomStats(date?: string) {
+  return useQuery({
+    queryKey: attendanceKeys.myHomeroomStats(date),
+    queryFn: () => getMyHomeroomStats(date),
+  });
+}
+
