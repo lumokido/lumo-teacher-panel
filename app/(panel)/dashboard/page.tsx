@@ -2,21 +2,87 @@
 
 import { useAnnouncements } from "@/hooks/useAnnouncements";
 import { useMyHomeroomStats } from "@/hooks/useAttendance";
-import { useMyAssignedClasses } from "@/hooks/useAdminClasses";
+import { useMyAssignedClasses, useClassesList } from "@/hooks/useAdminClasses";
+import { useAllExams } from "@/hooks/useExams";
+import { getTimetableByClass } from "@/lib/api/timetable";
+import { useQueries } from "@tanstack/react-query";
 import { format } from "date-fns";
-import { Users, UserCheck, UserX, Percent, CheckCircle, Loader2 } from "lucide-react";
+import { useState } from "react";
+import { 
+  Users, 
+  UserCheck, 
+  UserX, 
+  Percent, 
+  CheckCircle, 
+  Loader2, 
+  Megaphone, 
+  Clock, 
+  Calendar,
+  BookOpen
+} from "lucide-react";
 
 export default function DashboardPage() {
+  const [activeTab, setActiveTab] = useState<"bulletins" | "exams" | "timetable">("bulletins");
+
   const { data: announcements = [], isLoading: announcementsLoading } = useAnnouncements();
   const { data: assignedData, isLoading: assignedLoading } = useMyAssignedClasses();
+  const { data: classes = [], isLoading: classesLoading } = useClassesList();
+  const { data: exams = [], isLoading: examsLoading } = useAllExams();
   
   // Use today's date formatted as YYYY-MM-DD
   const todayStr = format(new Date(), "yyyy-MM-dd");
+  const todayDayName = format(new Date(), "EEEE");
   const { data: stats, isLoading: statsLoading } = useMyHomeroomStats(todayStr);
 
   // Split into announcements and events
   const bulletins = announcements.filter((a) => a.type === "ANNOUNCEMENT");
   const events = announcements.filter((a) => a.type === "EVENT");
+
+  // Map teacher's assigned classes to retrieve their class IDs
+  const assignedClassNames = assignedData?.assignedClasses || [];
+  const teacherClasses = classes.filter((cls) => assignedClassNames.includes(cls.name));
+  const teacherClassIds = teacherClasses.map((cls) => cls.id);
+
+  // Fetch timetables in parallel for the teacher's assigned classes
+  const timetableQueries = useQueries({
+    queries: teacherClassIds.map((classId) => ({
+      queryKey: ["timetable", "class", classId],
+      queryFn: () => getTimetableByClass(classId),
+      enabled: !!classId,
+    })),
+  });
+  
+  const timetablesLoading = timetableQueries.some((q) => q.isLoading);
+
+  // Filter Today's Timetable (only matching periods on today's day of the week)
+  const allTimetableEntries = timetableQueries.flatMap((q) => q.data || []);
+  const todayTimetable = allTimetableEntries
+    .filter((entry) => entry.day.toLowerCase() === todayDayName.toLowerCase())
+    .sort((a, b) => {
+      const classCompare = a.schoolClass.name.localeCompare(b.schoolClass.name);
+      if (classCompare !== 0) return classCompare;
+      return a.period - b.period;
+    });
+
+  // Filter Today's Exams (matching teacher's classes OR school-wide exams scheduled for today)
+  const todayExams = exams
+    .filter((exam) => {
+      const isSchoolWide = !exam.schoolClass;
+      const isAssigned = exam.schoolClass?.name && assignedClassNames.includes(exam.schoolClass.name);
+      return isSchoolWide || isAssigned;
+    })
+    .flatMap((exam) => {
+      return exam.subjects
+        .filter((sub) => sub.examDate === todayStr)
+        .map((sub) => ({
+          ...sub,
+          examName: exam.examName,
+          className: exam.schoolClass?.name || "School-Wide",
+        }));
+    })
+    .sort((a, b) => a.startTime.localeCompare(b.startTime));
+
+  const isBoardLoading = announcementsLoading || assignedLoading || classesLoading || examsLoading || timetablesLoading;
 
   return (
     <div className="space-y-8">
@@ -122,42 +188,161 @@ export default function DashboardPage() {
 
       {/* Grid Layout */}
       <div className="grid gap-8 lg:grid-cols-3">
-        {/* Left/Main Column: Bulletin Board */}
+        {/* Left/Main Column: Tabbed Notice Board */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="border-b border-slate-100 pb-3">
+          <div className="border-b border-slate-100 pb-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <h3 className="font-montserrat text-xl font-bold text-slate-800 flex items-center gap-2">
-              <svg className="h-6 w-6 text-sky-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z" />
-              </svg>
-              School Bulletins
+              <Megaphone className="h-6 w-6 text-sky-500" />
+              School Board
             </h3>
+            <div className="flex bg-slate-100 p-1 rounded-xl">
+              <button
+                type="button"
+                onClick={() => setActiveTab("bulletins")}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 ${
+                  activeTab === "bulletins"
+                    ? "bg-white text-slate-900 shadow-sm"
+                    : "text-slate-500 hover:text-slate-900"
+                }`}
+              >
+                Bulletins
+                <span className={`px-1.5 py-0.2 rounded-full text-[10px] ${
+                  activeTab === "bulletins"
+                    ? "bg-sky-100 text-sky-700 font-bold"
+                    : "bg-slate-200 text-slate-600"
+                }`}>
+                  {bulletins.length}
+                </span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab("exams")}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 ${
+                  activeTab === "exams"
+                    ? "bg-white text-slate-900 shadow-sm"
+                    : "text-slate-500 hover:text-slate-900"
+                }`}
+              >
+                Today's Exams
+                <span className={`px-1.5 py-0.2 rounded-full text-[10px] ${
+                  activeTab === "exams"
+                    ? "bg-sky-100 text-sky-700 font-bold"
+                    : "bg-slate-200 text-slate-600"
+                }`}>
+                  {todayExams.length}
+                </span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab("timetable")}
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 ${
+                  activeTab === "timetable"
+                    ? "bg-white text-slate-900 shadow-sm"
+                    : "text-slate-500 hover:text-slate-900"
+                }`}
+              >
+                Today's Timetable
+                <span className={`px-1.5 py-0.2 rounded-full text-[10px] ${
+                  activeTab === "timetable"
+                    ? "bg-sky-100 text-sky-700 font-bold"
+                    : "bg-slate-200 text-slate-600"
+                }`}>
+                  {todayTimetable.length}
+                </span>
+              </button>
+            </div>
           </div>
 
-          {announcementsLoading ? (
+          {isBoardLoading ? (
             <div className="py-12 text-center text-slate-400">
               <div className="mx-auto mb-3 h-7 w-7 animate-spin rounded-full border-2 border-sky-200 border-t-sky-600" />
-              Loading bulletins...
+              Loading board items...
             </div>
-          ) : bulletins.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50/50 p-8 text-center text-slate-500">
-              No bulletin notices posted yet.
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {bulletins.map((item) => (
-                <div
-                  key={item.id}
-                  className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm hover:shadow-md hover:border-slate-200 transition-all"
-                >
-                  <div className="mb-2 flex items-center justify-between text-xs font-semibold text-slate-400">
-                    <span className="rounded-full bg-sky-50 px-2.5 py-0.5 text-sky-700">Bulletin</span>
-                    <span>{format(new Date(item.startDate), "MMMM dd, yyyy")}</span>
+          ) : activeTab === "bulletins" ? (
+            bulletins.length === 0 ? (
+              <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50/50 p-8 text-center text-slate-500">
+                No bulletin notices posted yet.
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {bulletins.map((item) => (
+                  <div
+                    key={item.id}
+                    className="rounded-xl border border-slate-100 bg-white p-5 shadow-sm hover:shadow-md hover:border-slate-200 transition-all"
+                  >
+                    <div className="mb-2 flex items-center justify-between text-xs font-semibold text-slate-400">
+                      <span className="rounded-full bg-sky-50 px-2.5 py-0.5 text-sky-700">Bulletin</span>
+                      <span>{format(new Date(item.startDate), "MMMM dd, yyyy")}</span>
+                    </div>
+                    <h4 className="font-semibold text-slate-900 text-lg">{item.title}</h4>
+                    <p className="mt-2 text-sm leading-relaxed text-slate-600">{item.description}</p>
                   </div>
-                  <h4 className="font-semibold text-slate-900 text-lg">{item.title}</h4>
-                  <p className="mt-2 text-sm leading-relaxed text-slate-600">{item.description}</p>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )
+          ) : activeTab === "exams" ? (
+            todayExams.length === 0 ? (
+              <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50/50 p-8 text-center text-slate-500">
+                No exams scheduled for today ({format(new Date(), "MMMM dd, yyyy")}).
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {todayExams.map((paper, idx) => (
+                  <div
+                    key={`${paper.id}-${idx}`}
+                    className="rounded-xl border border-sky-100/50 bg-white p-5 shadow-sm hover:shadow-md hover:border-sky-200 transition-all flex justify-between items-center"
+                  >
+                    <div className="space-y-2">
+                      <div className="flex flex-wrap items-center gap-2 text-xs font-semibold text-slate-400">
+                        <span className="rounded-full bg-sky-50 px-2.5 py-0.5 text-sky-700">
+                          {paper.className}
+                        </span>
+                        <span>{paper.examName}</span>
+                      </div>
+                      <h4 className="font-semibold text-slate-900 text-lg">{paper.subject}</h4>
+                      <p className="text-sm text-slate-500 flex items-center gap-1.5">
+                        <Clock className="h-4 w-4 text-sky-500" />
+                        {paper.startTime.slice(0, 5)} - {paper.endTime.slice(0, 5)}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-xs font-semibold text-slate-400 block">Max Marks</span>
+                      <p className="text-xl font-extrabold text-slate-800">{paper.maxMarks}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )
+          ) : (
+            todayTimetable.length === 0 ? (
+              <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50/50 p-8 text-center text-slate-500">
+                No periods scheduled for today ({todayDayName}).
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {todayTimetable.map((entry, idx) => (
+                  <div
+                    key={`${entry.id || idx}-${idx}`}
+                    className="rounded-xl border border-slate-100 bg-white p-4 shadow-sm hover:shadow-md hover:border-slate-200 transition-all flex items-center justify-between gap-4"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-sky-50 text-sky-700 font-extrabold text-lg">
+                        P{entry.period}
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-slate-900 text-base">{entry.subject}</h4>
+                        <p className="text-xs text-slate-500">
+                          Class: {entry.schoolClass.name} {entry.section ? ` - Section ${entry.section.name}` : ""}
+                        </p>
+                      </div>
+                    </div>
+                    <span className="rounded-full bg-emerald-50 border border-emerald-100 px-3 py-1 text-xs font-medium text-emerald-700">
+                      Scheduled
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )
           )}
         </div>
 

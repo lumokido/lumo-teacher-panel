@@ -4,7 +4,13 @@ import type { StudentRow } from "@/lib/api/students";
 export type ClassItem = {
   id: number;
   name: string;
+  assignedTeacher?: string;
+  totalStudents?: number;
+  totalTeachers?: number;
+  totalSections?: number;
+  subject?: string;
 };
+
 
 export type SectionItem = {
   id: number;

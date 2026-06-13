@@ -33,14 +33,21 @@ export default function TeacherDetailPanel({ emailId }: Props) {
   // Hydrate form when teacher loads
   useEffect(() => {
     if (teacher) {
+      const classesStr = Array.isArray(teacher.classes) 
+        ? teacher.classes.join(", ") 
+        : teacher.classes ?? "";
+      const subjectsStr = Array.isArray(teacher.subjects) 
+        ? teacher.subjects.join(", ") 
+        : teacher.subjects ?? "";
+
       setForm({
         emailId: teacher.emailId ?? "",
         passwordHash: "",
         name: teacher.name ?? "",
         mobileNumber: teacher.mobileNumber ?? "",
         classTeacher: teacher.classTeacher ?? "",
-        classes: teacher.classes ?? "",
-        subjects: teacher.subjects ?? "",
+        classes: classesStr,
+        subjects: subjectsStr,
       });
     }
   }, [teacher]);
@@ -62,11 +69,15 @@ export default function TeacherDetailPanel({ emailId }: Props) {
       success: true,
       ...form,
     };
-    updateMut.mutate(body, {
-      onSuccess: () => {
-        toast.success("Teacher updated successfully!");
-      },
-    });
+    if (teacher && teacher.id != null) {
+      updateMut.mutate({ id: teacher.id, body }, {
+        onSuccess: () => {
+          toast.success("Teacher updated successfully!");
+        },
+      });
+    } else {
+      toast.error("Cannot update teacher: Missing profile ID.");
+    }
   }
 
   return (

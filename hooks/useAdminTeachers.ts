@@ -2,6 +2,7 @@ import {
   addTeacher,
   listTeachers,
   updateTeacher,
+  deleteTeacher,
   type AdminTeacherWriteBody,
 } from "@/lib/api/adminTeachers";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -43,10 +44,22 @@ export function useAddTeacher() {
 export function useUpdateTeacher() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (body: AdminTeacherWriteBody) => updateTeacher(body),
+    mutationFn: ({ id, body }: { id: number; body: AdminTeacherWriteBody }) => updateTeacher(id, body),
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: adminTeachersKey });
       toast.success("Teacher updated");
+    },
+    onError: (e) => toast.error(messageFromAxios(e)),
+  });
+}
+
+export function useDeleteTeacher() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => deleteTeacher(id),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: adminTeachersKey });
+      toast.success("Teacher deleted successfully");
     },
     onError: (e) => toast.error(messageFromAxios(e)),
   });

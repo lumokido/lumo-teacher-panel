@@ -8,7 +8,15 @@ import ClassMultiSelect from "./ClassMultiSelect";
 import HomeroomSelect from "./HomeroomSelect";
 import Link from "next/link";
 
-function emptyForm(): Omit<AdminTeacherWriteBody, "success"> {
+type TeacherAddFormState = Omit<
+  AdminTeacherWriteBody,
+  "success" | "classes" | "subjects"
+> & {
+  classes: string;
+  subjects: string;
+};
+
+function emptyForm(): TeacherAddFormState {
   return {
     emailId: "",
     passwordHash: "",

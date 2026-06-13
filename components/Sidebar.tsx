@@ -12,7 +12,8 @@ import {
   FileText,
   Settings,
   Clock,
-  LogOut
+  LogOut,
+  Award
 } from "lucide-react";
 
 const navItems = [
@@ -20,6 +21,7 @@ const navItems = [
   { label: "Classes", href: "/classes", icon: School },
   { label: "Students", href: "/students", icon: Users },
   { label: "Assignments", href: "/assignments", icon: FileText },
+  { label: "Report Card", href: "/reportcard", icon: Award },
   { label: "Timetable", href: "/timetable", icon: Clock },
   { label: "Settings", href: "/settings", icon: Settings },
 ];
@@ -37,9 +39,9 @@ export default function Sidebar() {
   return (
     <aside className="w-72 rounded-2xl border border-sky-100 bg-white/80 p-5 shadow-sm backdrop-blur">
       <div className="mb-6 flex h-[100px]  items-center justify-center gap-2 text-center">
-        <Image src="/image.png" alt="Vignan Teacher Panel" width={50} height={50} />
+        <Image src="/logo.svg" alt="Alphores Teacher Panel" width={50} height={50} />
         <h1 className="text-2xl font-semibold font-montserrat text-slate-900">
-          Vignan Teacher
+          Alphores Teacher
         </h1>
       </div>
 

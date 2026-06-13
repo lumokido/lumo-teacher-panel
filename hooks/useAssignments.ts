@@ -4,6 +4,7 @@ import {
   listAssignmentsByClassAndSection,
   listMyAssignments,
   createAssignmentsBulk,
+  getAssignmentsByDateAndClass,
   type AssignmentWriteBody
 } from "@/lib/api/assignments";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -14,8 +15,10 @@ export const assignmentKeys = {
   all: ["assignments"] as const,
   byClass: (classId: number) => ["assignments", "class", classId] as const,
   byClassAndSection: (classId: number, sectionId: number) => ["assignments", "class", classId, "section", sectionId] as const,
+  byDateAndClass: (date: string, classId: number) => ["assignments", "history", date, classId] as const,
   myAssignments: ["assignments", "my"] as const,
 };
+
 
 function messageFromAxios(err: unknown): string {
   if (!isAxiosError(err)) return "Request failed";
@@ -74,3 +77,12 @@ export function useMyAssignments() {
     queryFn: listMyAssignments,
   });
 }
+
+export function useAssignmentsByDateAndClass(date: string, classId?: number) {
+  return useQuery({
+    queryKey: assignmentKeys.byDateAndClass(date, classId || 0),
+    queryFn: () => getAssignmentsByDateAndClass(date, classId!),
+    enabled: !!date && !!classId,
+  });
+}
+

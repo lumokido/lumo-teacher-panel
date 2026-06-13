@@ -15,6 +15,7 @@ export type AssignmentRow = {
   description: string;
   imageUrl?: string | null;
   dueDate: string; // YYYY-MM-DD
+  assignedDate?: string; // YYYY-MM-DD
   createdBy: string;
 };
 
@@ -26,6 +27,7 @@ export type AssignmentWriteBody = {
   description: string;
   imageUrl?: string | null;
   dueDate: string; // YYYY-MM-DD
+  assignedDate?: string; // YYYY-MM-DD
   createdBy?: string;
 };
 
@@ -56,4 +58,15 @@ export async function createAssignmentsBulk(body: AssignmentWriteBody[]): Promis
   const res = await api.post("/api/assignments/bulk", body);
   return res.data;
 }
+
+export async function getAssignmentsByDateAndClass(
+  date: string,
+  classId: number
+): Promise<AssignmentRow[]> {
+  const res = await api.get("/api/assignments/history/date", {
+    params: { date, classId },
+  });
+  return res.data;
+}
+
 

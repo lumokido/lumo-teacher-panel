@@ -15,19 +15,24 @@ import {
   LogOut,
   Users,
   ClipboardList,
-  BookOpen
+  BookOpen,
+  Award
 } from "lucide-react";
 
 const navItems = [
   { label: "Overview", href: "/principal/dashboard", icon: LayoutDashboard },
-  { label: "School", href: "/principal/school", icon: School },
-  { label: "Classes", href: "/principal/classes", icon: GraduationCap },
-  { label: "Teachers", href: "/principal/teachers", icon: Users },
   { label: "Attendance", href: "/principal/attendance", icon: Calendar },
-  { label: "Homework", href: "/principal/homework", icon: BookOpen },
-  { label: "Announcements & Events", href: "/principal/announcements", icon: Megaphone },
-  { label: "Timetable", href: "/principal/timetable", icon: Clock },
+
+  { label: "Classes", href: "/principal/classes", icon: GraduationCap },
   { label: "Exams", href: "/principal/exams", icon: ClipboardList },
+  { label: "Report Card", href: "/principal/reportcard", icon: Award },
+
+  { label: "Homework", href: "/principal/homework", icon: BookOpen },
+
+  { label: "Teachers", href: "/principal/teachers", icon: Users },
+  { label: "Timetable", href: "/principal/timetable", icon: Clock },
+  { label: "Announcements & Events", href: "/principal/announcements", icon: Megaphone },
+
 ];
 
 export default function PrincipalSidebar() {
@@ -43,9 +48,9 @@ export default function PrincipalSidebar() {
   return (
     <aside className="w-72 rounded-2xl border border-violet-100 bg-white/90 p-2 shadow-sm backdrop-blur">
       <div className="mb-6 flex h-[100px] items-center justify-center gap-2 text-center">
-        <Image src="/image.png" alt="Vignan" width={100} height={100} />
+        <Image src="/logo.svg" alt="Alphores" width={100} height={100} />
         <h1 className="text-xl font-semibold font-montserrat text-violet-950">
-          Vignan Director
+          Alphores Director
         </h1>
       </div>
 

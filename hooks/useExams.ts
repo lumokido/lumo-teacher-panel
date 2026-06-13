@@ -3,6 +3,9 @@ import {
   listAllExams,
   listSchoolExams,
   listExamsByClass,
+  getExamById,
+  updateExam,
+  deleteExam,
   type ExamWriteBody
 } from "@/lib/api/exams";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -55,6 +58,38 @@ export function useCreateExam() {
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: examKeys.all });
       toast.success("Exam scheduled successfully");
+    },
+    onError: (e) => toast.error(messageFromAxios(e)),
+  });
+}
+
+export function useExamById(id?: number) {
+  return useQuery({
+    queryKey: ["exams", id],
+    queryFn: () => getExamById(id!),
+    enabled: typeof id === "number" && !isNaN(id),
+  });
+}
+
+export function useUpdateExam() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, body }: { id: number; body: ExamWriteBody }) => updateExam(id, body),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: examKeys.all });
+      toast.success("Exam updated successfully");
+    },
+    onError: (e) => toast.error(messageFromAxios(e)),
+  });
+}
+
+export function useDeleteExam() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => deleteExam(id),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: examKeys.all });
+      toast.success("Exam deleted successfully");
     },
     onError: (e) => toast.error(messageFromAxios(e)),
   });

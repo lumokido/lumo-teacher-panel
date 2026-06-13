@@ -4,6 +4,8 @@ import { useClassesList, useCreateClass } from "@/hooks/useAdminClasses";
 import type { ClassItem } from "@/lib/api/adminClasses";
 import Link from "next/link";
 import { useState } from "react";
+import { School, Loader2 } from "lucide-react";
+
 
 export default function ClassesGrid() {
   const { data: classes = [], isLoading, isError, error, refetch } =
@@ -91,24 +93,69 @@ export default function ClassesGrid() {
         </div>
       ) : (
         /* Classes grid */
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {classes.map((cls: ClassItem) => (
             <Link
               key={cls.id}
               href={`/principal/classes/${encodeURIComponent(cls.name)}`}
-              className="group relative overflow-hidden rounded-2xl border border-violet-100 bg-white p-6 shadow-sm transition-all duration-200 hover:border-violet-300 hover:shadow-md hover:-translate-y-0.5"
+              className="group relative overflow-hidden rounded-2xl border border-violet-100 bg-white p-6 shadow-sm transition-all duration-200 hover:border-violet-300 hover:shadow-md hover:-translate-y-1"
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-violet-50/80 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
-              <div className="relative">
-                <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-violet-100 text-violet-600 transition-colors group-hover:bg-violet-600 group-hover:text-white">
-                  <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.147a60.438 60.438 0 00-.491 6.347A48.62 48.62 0 0112 20.904a48.62 48.62 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.636 50.636 0 00-2.658-.813A59.906 59.906 0 0112 3.493a59.903 59.903 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0112 13.489a50.702 50.702 0 017.74-3.342" />
+              <div className="absolute inset-0 bg-gradient-to-br from-violet-50/50 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+              <div className="relative space-y-4">
+                {/* Header */}
+                <div className="flex items-center gap-3">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-violet-600 transition-colors group-hover:bg-violet-600 group-hover:text-white">
+                    <School className="h-6 w-6" />
+                  </div>
+                  <div>
+                    <h3 className="font-montserrat text-lg font-bold text-slate-900 leading-tight">
+                      {cls.name}
+                    </h3>
+                    <p className="text-xs text-slate-500">
+                      Homeroom: <span className="font-semibold text-violet-700">{cls.assignedTeacher || "Not Assigned"}</span>
+                    </p>
+                  </div>
+                </div>
+
+                {/* Grid of stats */}
+                <div className="grid grid-cols-3 gap-2 py-2 border-y border-slate-50 text-center">
+                  <div>
+                    <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">Sections</span>
+                    <p className="text-base font-bold text-slate-800">{cls.totalSections ?? 0}</p>
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">Students</span>
+                    <p className="text-base font-bold text-slate-800">{cls.totalStudents ?? 0}</p>
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">Teachers</span>
+                    <p className="text-base font-bold text-slate-800">{cls.totalTeachers ?? 0}</p>
+                  </div>
+                </div>
+
+                {/* Subjects list */}
+                {cls.subject ? (
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">Subjects</span>
+                    <div className="flex flex-wrap gap-1">
+                      {cls.subject.split(",").map((sub: string, index: number) => (
+                        <span key={index} className="rounded-full bg-slate-50 border border-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-600">
+                          {sub.trim()}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-[10px] text-slate-400 italic">No subjects scheduled</div>
+                )}
+
+                {/* Footer action link */}
+                <div className="pt-1 flex items-center justify-between text-xs font-semibold text-violet-600 group-hover:text-violet-800 transition">
+                  <span>Manage Class</span>
+                  <svg className="h-4 w-4 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                   </svg>
                 </div>
-                <h3 className="font-montserrat text-lg font-semibold text-slate-900">
-                  {cls.name}
-                </h3>
-                <p className="mt-1 text-sm text-slate-500">Manage students →</p>
               </div>
             </Link>
           ))}
