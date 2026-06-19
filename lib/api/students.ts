@@ -11,6 +11,7 @@ export type StudentWriteBody = {
   studentClass: string;
   sectionName?: string;
   rollNumber?: string;
+  profilePhotoUrl?: string | null;
 };
 
 export type StudentRow = StudentWriteBody & {
@@ -41,6 +42,7 @@ export function emptyStudentForm(): StudentWriteBody {
     studentClass: "",
     sectionName: "",
     rollNumber: "",
+    profilePhotoUrl: "",
   };
 }
 
@@ -56,6 +58,7 @@ export function rowToForm(row: StudentRow): StudentWriteBody {
     studentClass: row.studentClass ?? "",
     sectionName: row.sectionName ?? "",
     rollNumber: row.rollNumber ?? "",
+    profilePhotoUrl: row.profilePhotoUrl ?? "",
   };
 }
 
@@ -104,9 +107,28 @@ export type StudentDetailResponse = {
   teacherName?: string;
   teacherEmail?: string;
   teacherMobile?: string;
+  profilePhotoUrl?: string | null;
 };
 
 export async function getStudentDetails(id: string): Promise<StudentDetailResponse> {
   const res = await api.get(`/api/students/${id}`);
+  return res.data;
+}
+
+export async function uploadStudentPhoto(
+  studentIdOrStudentIdentifier: string,
+  file: File,
+): Promise<{ success: boolean; message: string; profilePhotoUrl: string }> {
+  const formData = new FormData();
+  formData.append("file", file);
+  const res = await api.post(
+    `/api/students/${encodeURIComponent(studentIdOrStudentIdentifier)}/photo`,
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    },
+  );
   return res.data;
 }

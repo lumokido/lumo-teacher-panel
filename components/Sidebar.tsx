@@ -13,7 +13,8 @@ import {
   Settings,
   Clock,
   LogOut,
-  Award
+  Award,
+  Images
 } from "lucide-react";
 
 const navItems = [
@@ -23,6 +24,7 @@ const navItems = [
   { label: "Assignments", href: "/assignments", icon: FileText },
   { label: "Report Card", href: "/reportcard", icon: Award },
   { label: "Timetable", href: "/timetable", icon: Clock },
+  { label: "School Gallery", href: "/gallery", icon: Images },
   { label: "Settings", href: "/settings", icon: Settings },
 ];
 

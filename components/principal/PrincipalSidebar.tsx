@@ -16,7 +16,8 @@ import {
   Users,
   ClipboardList,
   BookOpen,
-  Award
+  Award,
+  Images
 } from "lucide-react";
 
 const navItems = [
@@ -32,7 +33,7 @@ const navItems = [
   { label: "Teachers", href: "/principal/teachers", icon: Users },
   { label: "Timetable", href: "/principal/timetable", icon: Clock },
   { label: "Announcements & Events", href: "/principal/announcements", icon: Megaphone },
-
+  { label: "School Gallery", href: "/principal/gallery", icon: Images },
 ];
 
 export default function PrincipalSidebar() {

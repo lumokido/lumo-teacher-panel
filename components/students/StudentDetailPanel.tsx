@@ -1,11 +1,14 @@
 "use client";
 
 import { useStudentDetails } from "@/hooks/useStudents";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 export default function StudentDetailPanel({ studentId }: { studentId: string }) {
   const router = useRouter();
+  const pathname = usePathname();
   const { data: student, isLoading, isError, error, refetch } = useStudentDetails(studentId);
+
+  const isPrincipal = pathname?.includes("/principal");
 
   const listErr =
     isError && error instanceof Error
@@ -56,7 +59,9 @@ export default function StudentDetailPanel({ studentId }: { studentId: string })
       <div>
         <button
           onClick={() => router.back()}
-          className="mb-4 inline-flex items-center gap-1.5 text-sm font-medium text-sky-600 transition hover:text-sky-800"
+          className={`mb-4 inline-flex items-center gap-1.5 text-sm font-medium transition ${
+            isPrincipal ? "text-violet-600 hover:text-violet-800" : "text-sky-600 hover:text-sky-800"
+          }`}
         >
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
@@ -64,16 +69,40 @@ export default function StudentDetailPanel({ studentId }: { studentId: string })
           Back
         </button>
         <div className="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <p className="mb-2 text-sm font-medium text-sky-600 tracking-wide uppercase">
-              Student Profile
-            </p>
-            <h2 className="font-montserrat text-3xl font-semibold text-slate-900">
-              {fullName || "—"}
-            </h2>
-            <p className="mt-2 text-slate-600">
-              Detailed view of student records and teacher assignments.
-            </p>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-5">
+            {/* Profile Photo */}
+            <div className={`relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl border-2 shadow-xs bg-slate-50 flex items-center justify-center ${
+              isPrincipal ? "border-violet-100" : "border-sky-100"
+            }`}>
+              {student.profilePhotoUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={student.profilePhotoUrl}
+                  alt={fullName}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <div className={`flex items-center justify-center font-montserrat text-xl font-bold uppercase tracking-wider h-full w-full ${
+                  isPrincipal ? "text-violet-600 bg-violet-50" : "text-sky-600 bg-sky-50"
+                }`}>
+                  {(student.firstName?.[0] || "") + (student.lastName?.[0] || "")}
+                </div>
+              )}
+            </div>
+
+            <div>
+              <p className={`mb-1 text-xs font-semibold uppercase tracking-wider ${
+                isPrincipal ? "text-violet-600" : "text-sky-600"
+              }`}>
+                Student Profile
+              </p>
+              <h2 className="font-montserrat text-3xl font-semibold text-slate-900 leading-tight">
+                {fullName || "—"}
+              </h2>
+              <p className="mt-1.5 text-sm text-slate-500 max-w-xl">
+                Detailed view of student records and teacher assignments.
+              </p>
+            </div>
           </div>
         </div>
       </div>

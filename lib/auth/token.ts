@@ -8,6 +8,7 @@ export function extractTokenFromBody(data: unknown): string | null {
     "access_token",
     "idToken",
     "bearerToken",
+    "refreshToken",
   ] as const;
   for (const k of keys) {
     const v = o[k];

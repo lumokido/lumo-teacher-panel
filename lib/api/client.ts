@@ -2,7 +2,8 @@ function getPublicApiBaseUrl(): string {
   const raw =
     process.env.NEXT_PUBLIC_API_BASE_URL?.replace(/\/$/, "") ??
     // "http://localhost:8080";
-    "https://java-production-a727.up.railway.app"
+    "https://api.lumokido.in";
+    // "https://java-production-a727.up.railway.app"
   return raw;
 }
 

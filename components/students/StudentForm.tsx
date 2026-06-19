@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import type { StudentWriteBody } from "@/lib/api/students";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { StudentPhotoUploader } from "@/components/students/StudentPhotoUploader";
 
 const GENDERS = ["Male", "Female", "Other"] as const;
 
@@ -16,6 +17,7 @@ type StudentFormProps = {
   onSubmit: (e: React.FormEvent) => void;
   busy?: boolean;
   submitLabel: string;
+  studentId?: string;
 };
 
 export function StudentForm({
@@ -24,6 +26,7 @@ export function StudentForm({
   onSubmit,
   busy,
   submitLabel,
+  studentId,
 }: StudentFormProps) {
   function setField<K extends keyof StudentWriteBody>(
     key: K,
@@ -35,7 +38,15 @@ export function StudentForm({
   return (
     <Card className="max-w-2xl border-sky-100">
       <form onSubmit={onSubmit}>
-        <CardContent className="grid gap-4 sm:grid-cols-2">
+        <CardContent className="grid gap-4 sm:grid-cols-2 pt-6">
+          <div className="sm:col-span-2 mb-4 flex justify-center">
+            <StudentPhotoUploader
+              value={form.profilePhotoUrl || ""}
+              onChange={(url) => setField("profilePhotoUrl", url)}
+              studentId={studentId}
+              theme="sky"
+            />
+          </div>
           <Field label="First name" className="sm:col-span-1">
             <Input
               required

@@ -5,7 +5,7 @@ import axios, {
     AxiosResponse,
     InternalAxiosRequestConfig,
   } from "axios";
-import { Alphores_TOKEN_KEY } from "@/lib/auth/constants";
+import { Alphores_TOKEN_KEY, AUTH_COOKIE, REFRESH_TOKEN_COOKIE, ROLE_COOKIE } from "@/lib/auth/constants";
 import { toast } from "sonner";
 
   // const API_BASE_URL = "http://localhost:5050/api";
@@ -46,6 +46,30 @@ import { toast } from "sonner";
     refreshSubscribers = [];
   }
   
+  function setBrowserCookie(name: string, value: string) {
+    if (typeof document === "undefined") return;
+    const isHttps = typeof window !== "undefined" && window.location.protocol === "https:";
+    const secure = isHttps ? "; Secure" : "";
+    const encoded = encodeURIComponent(value);
+    document.cookie = `${name}=${encoded}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax${secure}`;
+  }
+
+  function getUserRole(): "principal" | "teacher" | null {
+    if (typeof window === "undefined") return null;
+    
+    const type = sessionStorage.getItem("type");
+    if (type === "principal" || type === "teacher") return type;
+
+    if (typeof document !== "undefined") {
+      const match = document.cookie.match(/(?:^|; )Alphores_role=([^;]*)/);
+      if (match) {
+        const val = decodeURIComponent(match[1]);
+        if (val === "principal" || val === "teacher") return val as any;
+      }
+    }
+    return null;
+  }
+
   function getAccessToken(): string | null {
     if (typeof window === "undefined") return null;
   
@@ -74,17 +98,27 @@ import { toast } from "sonner";
   
     storage.setItem("accessToken", token);
     localStorage.setItem(Alphores_TOKEN_KEY, token);
+    setBrowserCookie(AUTH_COOKIE, token);
   }
+  
   function setRefreshToken(token: string) {
     if (typeof window === "undefined") return;
   
     sessionStorage.setItem("refreshToken", token);
+    localStorage.setItem("refreshToken", token);
+    setBrowserCookie(REFRESH_TOKEN_COOKIE, token);
   }
+  
   function clearTokens() {
     if (typeof window === "undefined") return;
   
     sessionStorage.clear();
     localStorage.clear();
+    if (typeof document !== "undefined") {
+      document.cookie = `${AUTH_COOKIE}=; path=/; max-age=0`;
+      document.cookie = `${REFRESH_TOKEN_COOKIE}=; path=/; max-age=0`;
+      document.cookie = `${ROLE_COOKIE}=; path=/; max-age=0`;
+    }
   }
   
  
@@ -141,20 +175,38 @@ import { toast } from "sonner";
         isRefreshing = true;
   
         try {
-          const response = await refreshApi.post("/auth-issuer/refresh", {
+          const role = getUserRole();
+          const refreshUrl = role === "teacher"
+            ? "/api/admin//login-teacher/refresh-token"
+            : "/api/admin/refresh-token";
+
+          const response = await refreshApi.post(refreshUrl, {
             refreshToken,
           });
   
           console.log("Refresh response:", response);
   
-          const newAccessToken = response.data.data.accessToken;
-          const newRefreshToken = response.data.data.refreshToken;
+          // Safely extract access/refresh token from various response formats
+          const newAccessToken =
+            response.data?.accessToken ||
+            response.data?.data?.accessToken ||
+            response.data?.token ||
+            response.data?.data?.token;
+
+          const newRefreshToken =
+            response.data?.refreshToken ||
+            response.data?.data?.refreshToken;
+
           console.log("New tokens:", { newAccessToken, newRefreshToken });
   
-          setAccessToken(newAccessToken);
-          setRefreshToken(newRefreshToken);
+          if (newAccessToken) {
+            setAccessToken(newAccessToken);
+          }
+          if (newRefreshToken) {
+            setRefreshToken(newRefreshToken);
+          }
   
-          onRefreshed(newAccessToken);
+          onRefreshed(newAccessToken || "");
   
           // toast.success("Session refreshed");
   

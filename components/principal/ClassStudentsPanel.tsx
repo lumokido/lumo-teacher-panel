@@ -10,7 +10,6 @@ import {
 import { studentDisplayName, getStudentId } from "@/lib/api/students";
 import type { StudentRow } from "@/lib/api/students";
 import type { ClassItem, SectionItem } from "@/lib/api/adminClasses";
-import AdminStudentDialog from "@/components/principal/AdminStudentDialog";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -36,7 +35,6 @@ export default function ClassStudentsPanel({ className }: Props) {
 
   const sectionMut = useCreateSection();
 
-  const [showStudentDialog, setShowStudentDialog] = useState(false);
   const [showSectionDialog, setShowSectionDialog] = useState(false);
   const [sectionName, setSectionName] = useState("");
   const [activeTab, setActiveTab] = useState<number | "all">("all");
@@ -123,13 +121,12 @@ export default function ClassStudentsPanel({ className }: Props) {
                 + Add section
               </button>
             ) : null}
-            <button
-              type="button"
-              onClick={() => setShowStudentDialog(true)}
-              className="rounded-xl bg-violet-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-violet-700 active:scale-[0.98]"
+            <Link
+              href={`/principal/classes/${encodeURIComponent(decodedName)}/add-student`}
+              className="rounded-xl bg-violet-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-violet-700 active:scale-[0.98] inline-flex items-center"
             >
               + Add student
-            </button>
+            </Link>
           </div>
         </div>
       </div>
@@ -240,13 +237,7 @@ export default function ClassStudentsPanel({ className }: Props) {
         </table>
       </div>
 
-      {/* Add student dialog */}
-      <AdminStudentDialog
-        className={decodedName}
-        sections={sections}
-        open={showStudentDialog}
-        onClose={() => setShowStudentDialog(false)}
-      />
+
 
       {/* Add section dialog */}
       {showSectionDialog ? (

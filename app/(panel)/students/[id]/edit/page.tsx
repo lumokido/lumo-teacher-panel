@@ -59,6 +59,7 @@ export default function EditStudentPage() {
         onSubmit={onSubmit}
         busy={updateMut.isPending}
         submitLabel="Save changes"
+        studentId={id}
       />
     </div>
   );

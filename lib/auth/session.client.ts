@@ -1,6 +1,7 @@
 import {
   AUTH_COOKIE,
   Alphores_TOKEN_KEY,
+  REFRESH_TOKEN_COOKIE,
   ROLE_COOKIE,
   type AuthRole,
 } from "@/lib/auth/constants";
@@ -37,6 +38,7 @@ export function persistAuthSession(
   fallbackRole: AuthRole,
 ): boolean {
   const token = extractTokenFromBody(body);
+  const refreshToken = extractTokenFromBody(body) || "";
   if (!token) {
     clearAuthSession();
     return false;
@@ -45,12 +47,15 @@ export function persistAuthSession(
   const role = parseAuthRoleFromLoginBody(body) ?? fallbackRole;
 
   setBrowserCookie(AUTH_COOKIE, token);
+  setBrowserCookie(REFRESH_TOKEN_COOKIE, refreshToken || "");
   setBrowserCookie(ROLE_COOKIE, role);
 
   try {
     localStorage.setItem(Alphores_TOKEN_KEY, token);
     sessionStorage.setItem("accessToken", token);
+    localStorage.setItem("refreshToken", refreshToken || "");
     sessionStorage.setItem("type", role);
+    sessionStorage.setItem("refreshToken", refreshToken || "");
   } catch {
     /* ignore storage errors */
   }
