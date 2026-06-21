@@ -18,7 +18,7 @@ export default function MessagesPage() {
   const { data: classes = [], isLoading: classesLoading } = useClassesList();
   
   const [selectedClassId, setSelectedClassId] = useState<number | "">("");
-  const [selectedSectionId, setSelectedSectionId] = useState<number | "">("");
+  const [selectedSectionId, setSelectedSectionId] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedStudent, setSelectedStudent] = useState<StudentRow | null>(null);
 
@@ -99,7 +99,7 @@ export default function MessagesPage() {
                 value={selectedClassId ? String(selectedClassId) : ""}
                 onValueChange={(val) => {
                   setSelectedClassId(val ? parseInt(val, 10) : "");
-                  setSelectedSectionId("");
+                  setSelectedSectionId(null as unknown as number);
                   setSelectedStudent(null);
                 }}
               >
@@ -119,8 +119,8 @@ export default function MessagesPage() {
                 disabled={!selectedClassId || sections.length === 0}
                 value={selectedSectionId ? String(selectedSectionId) : "ALL"}
                 onValueChange={(val) => {
-                  setSelectedSectionId(val !== "ALL" ? parseInt(val, 10) : "");
-                  setSelectedStudent(null);
+                  setSelectedSectionId(val !== "ALL" ? parseInt(val as string, 10) : null as unknown as number);
+                  setSelectedStudent(null as StudentRow | null);
                 }}
               >
                 <SelectTrigger className="flex-1 rounded-xl border-sky-200 bg-white h-9 text-xs">
