@@ -17,12 +17,19 @@ export type StudentWriteBody = {
 export type StudentRow = StudentWriteBody & {
   id?: number | string;
   studentId?: number | string;
+  admissionId?: string;
 };
 
 export function getStudentId(row: StudentRow | StudentDetailResponse): string | null {
   const id = row.id ?? row.studentId;
   if (id == null || id === "") return null;
   return String(id);
+}
+
+export function getAdmissionId(row: StudentRow): string | null {
+  const id = row.admissionId;
+  if (id == null || id === "") return null;
+  return id;
 }
 
 export function studentDisplayName(row: StudentRow): string {

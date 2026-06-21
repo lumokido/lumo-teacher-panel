@@ -14,7 +14,8 @@ import {
   Clock,
   LogOut,
   Award,
-  Images
+  Images,
+  MessageSquare
 } from "lucide-react";
 
 const navItems = [
@@ -25,6 +26,7 @@ const navItems = [
   { label: "Report Card", href: "/reportcard", icon: Award },
   { label: "Timetable", href: "/timetable", icon: Clock },
   { label: "School Gallery", href: "/gallery", icon: Images },
+  { label: "Messages", href: "/messages", icon: MessageSquare },
   { label: "Settings", href: "/settings", icon: Settings },
 ];
 
