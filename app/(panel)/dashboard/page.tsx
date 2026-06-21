@@ -61,7 +61,7 @@ export default function DashboardPage() {
     .sort((a, b) => {
       const classCompare = a.schoolClass.name.localeCompare(b.schoolClass.name);
       if (classCompare !== 0) return classCompare;
-      return a.period - b.period;
+      return (a.period || 0) - (b.period || 0);
     });
 
   // Filter Today's Exams (matching teacher's classes OR school-wide exams scheduled for today)
