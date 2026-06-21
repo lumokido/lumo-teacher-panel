@@ -172,7 +172,7 @@ export default function AdminStudentAddForm({ className }: Props) {
             Section <span className="text-slate-400 font-normal">(Optional)</span>
             <Select
               value={form.sectionName || "none"}
-              onValueChange={(val) => setField("sectionName", val === "none" ? "" : val)}
+              onValueChange={(val) => setField("sectionName", val === "none" || !val ? "" : val)}
               disabled={busy}
             >
               <SelectTrigger className="w-full rounded-xl border-violet-200 bg-white h-[44px] text-sm">

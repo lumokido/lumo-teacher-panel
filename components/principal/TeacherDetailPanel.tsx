@@ -11,6 +11,11 @@ type Props = {
   emailId: string;
 };
 
+type TeacherFormState = Omit<AdminTeacherWriteBody, "success" | "classes" | "subjects"> & {
+  classes: string;
+  subjects: string;
+};
+
 export default function TeacherDetailPanel({ emailId }: Props) {
   const decodedEmail = decodeURIComponent(emailId);
   const { data: teachers = [], isLoading, isError, error, refetch } = useTeachersList();
@@ -21,7 +26,7 @@ export default function TeacherDetailPanel({ emailId }: Props) {
     [teachers, decodedEmail]
   );
 
-  const [form, setForm] = useState<Omit<AdminTeacherWriteBody, "success">>({
+  const [form, setForm] = useState<TeacherFormState>({
     emailId: decodedEmail,
     passwordHash: "",
     name: "",

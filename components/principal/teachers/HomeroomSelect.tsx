@@ -22,7 +22,7 @@ export default function HomeroomSelect({ value, onChange }: Props) {
   const { data: classes = [], isLoading } = useClassesList();
 
   return (
-    <Select value={value || undefined} onValueChange={onChange}>
+    <Select value={value || undefined} onValueChange={(val) => onChange(val ?? "")}>
       <SelectTrigger className="w-full min-h-[42px] rounded-xl border-violet-200 bg-white px-4 py-2.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-violet-300">
         <SelectValue placeholder="Select homeroom section..." />
       </SelectTrigger>
