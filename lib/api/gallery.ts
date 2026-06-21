@@ -61,7 +61,16 @@ export async function getGalleryItems(typeFilter?: string): Promise<GalleryItem[
   }
 
   const res = await api.get("/api/gallery", { params });
-  return res.data;
+  
+  if (res.data && Array.isArray(res.data.content)) {
+    return res.data.content;
+  } else if (res.data && Array.isArray(res.data.data)) {
+    return res.data.data;
+  } else if (Array.isArray(res.data)) {
+    return res.data;
+  }
+  
+  return [];
 }
 
 export async function getGalleryItem(id: number): Promise<GalleryItem> {
