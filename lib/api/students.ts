@@ -62,6 +62,15 @@ export function rowToForm(row: StudentRow): StudentWriteBody {
   };
 }
 
+export type PaginatedStudents = {
+  students: StudentRow[];
+  pageNumber: number;
+  pageSize: number;
+  totalElements: number;
+  totalPages: number;
+  last: boolean;
+};
+
 function unwrapStudentList(data: unknown): StudentRow[] {
   if (Array.isArray(data)) return data as StudentRow[];
   if (data && typeof data === "object") {
@@ -74,8 +83,17 @@ function unwrapStudentList(data: unknown): StudentRow[] {
   return [];
 }
 
-export async function listStudents(): Promise<StudentRow[]> {
-  const res = await api.get("/api/admin/get-all-students");
+export function listStudents(page: number, size: number): Promise<PaginatedStudents>;
+export function listStudents(): Promise<StudentRow[]>;
+export async function listStudents(page?: number, size?: number): Promise<StudentRow[] | PaginatedStudents> {
+  const params: Record<string, number> = {};
+  if (page !== undefined) params.page = page;
+  if (size !== undefined) params.size = size;
+
+  const res = await api.get("/api/admin/get-all-students", { params });
+  if (page !== undefined && size !== undefined && res.data && typeof res.data === "object" && "pageNumber" in res.data) {
+    return res.data as PaginatedStudents;
+  }
   return unwrapStudentList(res.data);
 }
 

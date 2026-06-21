@@ -1,13 +1,21 @@
 "use client";
 
+import { useState } from "react";
 import { DataTable } from "@/components/ui/data-table";
 import { getStudentId } from "@/lib/api/students";
 import { studentsTableColumns } from "@/lib/tables/students-table.config";
-import { useStudentsList } from "@/hooks/useStudents";
+import { usePaginatedStudentsList } from "@/hooks/useStudents";
 
 export default function StudentsList() {
-  const { data: students = [], isLoading, isError, error, refetch } =
-    useStudentsList();
+  const [page, setPage] = useState(0);
+  const size = 10;
+
+  const { data, isLoading, isError, error, refetch } = usePaginatedStudentsList(page, size);
+
+  const isPaginated = data && !Array.isArray(data);
+  const students = isPaginated ? data.students : (data || []);
+  const pageNumber = isPaginated ? data.pageNumber : 0;
+  const totalPages = isPaginated ? data.totalPages : 1;
 
   const listErr =
     isError && error instanceof Error
@@ -49,6 +57,10 @@ export default function StudentsList() {
         isLoading={isLoading}
         emptyMessage="No students yet."
         rowKey={(row, index) => getStudentId(row) ?? `row-${index}`}
+        pageNumber={isPaginated ? pageNumber : undefined}
+        totalPages={isPaginated ? totalPages : undefined}
+        onPrevPage={() => setPage((p) => Math.max(0, p - 1))}
+        onNextPage={() => setPage((p) => p + 1)}
       />
     </div>
   );

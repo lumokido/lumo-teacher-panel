@@ -5,7 +5,7 @@ import {
   deleteTeacher,
   type AdminTeacherWriteBody,
 } from "@/lib/api/adminTeachers";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import { toast } from "sonner";
 
@@ -25,7 +25,16 @@ function messageFromAxios(err: unknown): string {
 export function useTeachersList() {
   return useQuery({
     queryKey: adminTeachersKey,
-    queryFn: listTeachers,
+    queryFn: () => listTeachers(),
+  });
+}
+
+export function usePaginatedTeachersList(page: number, size: number) {
+  return useQuery({
+    queryKey: [...adminTeachersKey, "paginated", page, size],
+    queryFn: () => listTeachers(page, size),
+    placeholderData: keepPreviousData,
+    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
   });
 }
 

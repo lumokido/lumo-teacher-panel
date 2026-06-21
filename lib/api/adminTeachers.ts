@@ -22,6 +22,15 @@ export type TeacherRow = {
   subjects?: string | string[];
 };
 
+export type PaginatedTeachers = {
+  teachers: TeacherRow[];
+  pageNumber: number;
+  pageSize: number;
+  totalElements: number;
+  totalPages: number;
+  last: boolean;
+};
+
 function unwrapTeacherList(data: unknown): TeacherRow[] {
   if (Array.isArray(data)) return data as TeacherRow[];
   if (data && typeof data === "object") {
@@ -34,8 +43,17 @@ function unwrapTeacherList(data: unknown): TeacherRow[] {
   return [];
 }
 
-export async function listTeachers(): Promise<TeacherRow[]> {
-  const res = await api.get("/api/admin/get-all");
+export function listTeachers(page: number, size: number): Promise<PaginatedTeachers>;
+export function listTeachers(): Promise<TeacherRow[]>;
+export async function listTeachers(page?: number, size?: number): Promise<TeacherRow[] | PaginatedTeachers> {
+  const params: Record<string, number> = {};
+  if (page !== undefined) params.page = page;
+  if (size !== undefined) params.size = size;
+
+  const res = await api.get("/api/admin/get-all", { params });
+  if (page !== undefined && size !== undefined && res.data && typeof res.data === "object" && "pageNumber" in res.data) {
+    return res.data as PaginatedTeachers;
+  }
   return unwrapTeacherList(res.data);
 }
 

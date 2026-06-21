@@ -5,7 +5,7 @@ import {
   getStudentDetails,
   type StudentWriteBody,
 } from "@/lib/api/students";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import { toast } from "sonner";
 
@@ -25,7 +25,16 @@ function messageFromAxios(err: unknown): string {
 export function useStudentsList() {
   return useQuery({
     queryKey: studentsKey,
-    queryFn: listStudents,
+    queryFn: () => listStudents(),
+  });
+}
+
+export function usePaginatedStudentsList(page: number, size: number) {
+  return useQuery({
+    queryKey: [...studentsKey, "paginated", page, size],
+    queryFn: () => listStudents(page, size),
+    placeholderData: keepPreviousData,
+    staleTime: 1000 * 60 * 5, // Cache for 5 minutes as requested
   });
 }
 

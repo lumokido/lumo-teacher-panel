@@ -1,24 +1,32 @@
 "use client";
 
-import { useTeachersList, useDeleteTeacher } from "@/hooks/useAdminTeachers";
+import { usePaginatedTeachersList, useDeleteTeacher } from "@/hooks/useAdminTeachers";
 import type { TeacherRow } from "@/lib/api/adminTeachers";
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { 
   Mail, 
   Phone, 
-  UserCheck, 
-  BookOpen, 
-  Trash2, 
   UserX, 
   Loader2, 
   Plus,
-  AlertTriangle
+  AlertTriangle,
+  Trash2,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
 
 export default function TeachersPanel() {
-  const { data: teachers = [], isLoading, isError, error, refetch } = useTeachersList();
+  const [page, setPage] = useState(0);
+  const size = 9; // 3x3 grid
+  
+  const { data, isLoading, isError, error, refetch } = usePaginatedTeachersList(page, size);
   const deleteMut = useDeleteTeacher();
+
+  const isPaginated = data && !Array.isArray(data);
+  const teachers = isPaginated ? data.teachers : (data || []);
+  const pageNumber = isPaginated ? data.pageNumber : 0;
+  const totalPages = isPaginated ? data.totalPages : 1;
 
   // State to track which teacher is being deleted
   const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
@@ -117,106 +125,135 @@ export default function TeachersPanel() {
           </p>
         </div>
       ) : (
-        /* Staff Cards Grid */
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {teachers.map((t: TeacherRow, i: number) => {
-            const classesArray = parseToList(t.classes);
-            const subjectsArray = parseToList(t.subjects);
-            const initials = getInitials(t.name || "");
+        <>
+          {/* Staff Cards Grid */}
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {teachers.map((t: TeacherRow, i: number) => {
+              const classesArray = parseToList(t.classes);
+              const subjectsArray = parseToList(t.subjects);
+              const initials = getInitials(t.name || "");
 
-            return (
-              <div
-                key={t.emailId ?? `teacher-${i}`}
-                className="rounded-2xl border border-violet-100 bg-white p-6 shadow-sm flex flex-col hover:shadow-md hover:border-violet-300 transition-all duration-200 relative overflow-hidden"
-              >
-                {/* Profile Header */}
-                <div className="flex items-start justify-between gap-4 mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-violet-100 text-violet-700 font-extrabold text-sm shadow-sm">
-                      {initials}
+              return (
+                <div
+                  key={t.emailId ?? `teacher-${i}`}
+                  className="rounded-2xl border border-violet-100 bg-white p-6 shadow-sm flex flex-col hover:shadow-md hover:border-violet-300 transition-all duration-200 relative overflow-hidden"
+                >
+                  {/* Profile Header */}
+                  <div className="flex items-start justify-between gap-4 mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-violet-100 text-violet-700 font-extrabold text-sm shadow-sm">
+                        {initials}
+                      </div>
+                      <div>
+                        <h3 className="font-semibold text-slate-900 text-base leading-tight">
+                          {t.name || "—"}
+                        </h3>
+                        <span className="text-[10px] mt-1 inline-flex items-center gap-1 rounded-full px-2 py-0.5 font-bold uppercase tracking-wider bg-violet-50 text-violet-700">
+                          {t.classTeacher ? `Class Teacher: ${t.classTeacher}` : "No Homeroom"}
+                        </span>
+                      </div>
                     </div>
+                  </div>
+
+                  {/* Contact details */}
+                  <div className="space-y-2 text-xs text-slate-500 py-3 border-y border-slate-50 my-1">
+                    <div className="flex items-center gap-2">
+                      <Mail className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                      <span className="truncate">{t.emailId || "—"}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Phone className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+                      <span>{t.mobileNumber || "—"}</span>
+                    </div>
+                  </div>
+
+                  {/* Assignments section */}
+                  <div className="flex-1 py-3 space-y-3">
+                    {/* Classes */}
                     <div>
-                      <h3 className="font-semibold text-slate-900 text-base leading-tight">
-                        {t.name || "—"}
-                      </h3>
-                      <span className="text-[10px] mt-1 inline-flex items-center gap-1 rounded-full px-2 py-0.5 font-bold uppercase tracking-wider bg-violet-50 text-violet-700">
-                        {t.classTeacher ? `Class Teacher: ${t.classTeacher}` : "No Homeroom"}
-                      </span>
+                      <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">Assigned Classes</span>
+                      {classesArray.length > 0 ? (
+                        <div className="flex flex-wrap gap-1">
+                          {classesArray.map((cls, idx) => (
+                            <span key={idx} className="rounded bg-slate-50 border border-slate-100 px-1.5 py-0.5 text-[10px] font-medium text-slate-600">
+                              {cls}
+                            </span>
+                          ))}
+                        </div>
+                      ) : (
+                        <span className="text-[10px] text-slate-400 italic">No assigned classes</span>
+                      )}
+                    </div>
+
+                    {/* Subjects */}
+                    <div>
+                      <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">Subjects</span>
+                      {subjectsArray.length > 0 ? (
+                        <div className="flex flex-wrap gap-1">
+                          {subjectsArray.map((sub, idx) => (
+                            <span key={idx} className="rounded bg-violet-50 border border-violet-100/50 px-1.5 py-0.5 text-[10px] font-medium text-violet-600">
+                              {sub}
+                            </span>
+                          ))}
+                        </div>
+                      ) : (
+                        <span className="text-[10px] text-slate-400 italic">No subjects scheduled</span>
+                      )}
                     </div>
                   </div>
-                </div>
 
-                {/* Contact details */}
-                <div className="space-y-2 text-xs text-slate-500 py-3 border-y border-slate-50 my-1">
-                  <div className="flex items-center gap-2">
-                    <Mail className="h-3.5 w-3.5 text-slate-400 shrink-0" />
-                    <span className="truncate">{t.emailId || "—"}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Phone className="h-3.5 w-3.5 text-slate-400 shrink-0" />
-                    <span>{t.mobileNumber || "—"}</span>
-                  </div>
-                </div>
-
-                {/* Assignments section */}
-                <div className="flex-1 py-3 space-y-3">
-                  {/* Classes */}
-                  <div>
-                    <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">Assigned Classes</span>
-                    {classesArray.length > 0 ? (
-                      <div className="flex flex-wrap gap-1">
-                        {classesArray.map((cls, idx) => (
-                          <span key={idx} className="rounded bg-slate-50 border border-slate-100 px-1.5 py-0.5 text-[10px] font-medium text-slate-600">
-                            {cls}
-                          </span>
-                        ))}
-                      </div>
-                    ) : (
-                      <span className="text-[10px] text-slate-400 italic">No assigned classes</span>
-                    )}
-                  </div>
-
-                  {/* Subjects */}
-                  <div>
-                    <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block mb-1">Subjects</span>
-                    {subjectsArray.length > 0 ? (
-                      <div className="flex flex-wrap gap-1">
-                        {subjectsArray.map((sub, idx) => (
-                          <span key={idx} className="rounded bg-violet-50 border border-violet-100/50 px-1.5 py-0.5 text-[10px] font-medium text-violet-600">
-                            {sub}
-                          </span>
-                        ))}
-                      </div>
-                    ) : (
-                      <span className="text-[10px] text-slate-400 italic">No subjects scheduled</span>
-                    )}
-                  </div>
-                </div>
-
-                {/* Action Footer */}
-                <div className="mt-5 pt-3 border-t border-slate-50 flex items-center justify-between">
-                  <Link
-                    href={`/principal/teachers/${encodeURIComponent(t.emailId ?? "")}`}
-                    className="text-xs font-semibold text-violet-600 hover:text-violet-800 transition"
-                  >
-                    View Profile & Edit
-                  </Link>
-                  {t.id != null ? (
-                    <button
-                      type="button"
-                      onClick={() => triggerDelete(t.id!, t.name || "")}
-                      disabled={deleteMut.isPending}
-                      className="inline-flex items-center gap-1 text-xs font-semibold text-rose-600 hover:text-rose-800 transition cursor-pointer"
+                  {/* Action Footer */}
+                  <div className="mt-5 pt-3 border-t border-slate-50 flex items-center justify-between">
+                    <Link
+                      href={`/principal/teachers/${encodeURIComponent(t.emailId ?? "")}`}
+                      className="text-xs font-semibold text-violet-600 hover:text-violet-800 transition"
                     >
-                      <Trash2 className="h-3.5 w-3.5" />
-                      Delete
-                    </button>
-                  ) : null}
+                      View Profile & Edit
+                    </Link>
+                    {t.id != null ? (
+                      <button
+                        type="button"
+                        onClick={() => triggerDelete(t.id!, t.name || "")}
+                        disabled={deleteMut.isPending}
+                        className="inline-flex items-center gap-1 text-xs font-semibold text-rose-600 hover:text-rose-800 transition cursor-pointer"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                        Delete
+                      </button>
+                    ) : null}
+                  </div>
                 </div>
+              );
+            })}
+          </div>
+
+          {/* Pagination Controls */}
+          {isPaginated && (
+            <div className="flex items-center justify-between px-2 pt-4 border-t border-slate-100">
+              <div className="text-sm text-slate-500">
+                Page {pageNumber + 1} of {Math.max(1, totalPages)}
               </div>
-            );
-          })}
-        </div>
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => setPage(p => Math.max(0, p - 1))}
+                  disabled={pageNumber === 0 || isLoading}
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-slate-200 bg-white text-slate-500 hover:bg-slate-50 disabled:pointer-events-none disabled:opacity-50 transition"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                  <span className="sr-only">Previous page</span>
+                </button>
+                <button
+                  onClick={() => setPage(p => p + 1)}
+                  disabled={pageNumber >= totalPages - 1 || isLoading}
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-slate-200 bg-white text-slate-500 hover:bg-slate-50 disabled:pointer-events-none disabled:opacity-50 transition"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                  <span className="sr-only">Next page</span>
+                </button>
+              </div>
+            </div>
+          )}
+        </>
       )}
 
       {/* Delete Confirmation Modal Dialog */}

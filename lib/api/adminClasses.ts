@@ -18,6 +18,15 @@ export type SectionItem = {
   classId: number;
 };
 
+export type PaginatedStudents = {
+  students: StudentRow[];
+  pageNumber: number;
+  pageSize: number;
+  totalElements: number;
+  totalPages: number;
+  last: boolean;
+};
+
 function unwrapClassList(data: unknown): ClassItem[] {
   if (Array.isArray(data)) return data as ClassItem[];
   if (data && typeof data === "object") {
@@ -76,12 +85,24 @@ export async function createSection(
 }
 
 /** GET /api/students/class/{className} */
+export function listStudentsByClass(className: string, page: number, size: number): Promise<PaginatedStudents>;
+export function listStudentsByClass(className: string): Promise<StudentRow[]>;
 export async function listStudentsByClass(
   className: string,
-): Promise<StudentRow[]> {
+  page?: number,
+  size?: number,
+): Promise<StudentRow[] | PaginatedStudents> {
+  const params: Record<string, number> = {};
+  if (page !== undefined) params.page = page;
+  if (size !== undefined) params.size = size;
+  
   const res = await api.get(
     `/api/students/class/${encodeURIComponent(className)}`,
+    { params }
   );
+  if (page !== undefined && size !== undefined && res.data && typeof res.data === "object" && "pageNumber" in res.data) {
+    return res.data as PaginatedStudents;
+  }
   return unwrapStudentList(res.data);
 }
 
@@ -94,19 +115,41 @@ export async function listSectionsByClassId(
 }
 
 /** GET /api/students/class/id/{classId} */
+export function listStudentsByClassId(classId: number, page: number, size: number): Promise<PaginatedStudents>;
+export function listStudentsByClassId(classId: number): Promise<StudentRow[]>;
 export async function listStudentsByClassId(
   classId: number,
-): Promise<StudentRow[]> {
-  const res = await api.get(`/api/students/class/id/${classId}`);
+  page?: number,
+  size?: number,
+): Promise<StudentRow[] | PaginatedStudents> {
+  const params: Record<string, number> = {};
+  if (page !== undefined) params.page = page;
+  if (size !== undefined) params.size = size;
+
+  const res = await api.get(`/api/students/class/id/${classId}`, { params });
+  if (page !== undefined && size !== undefined && res.data && typeof res.data === "object" && "pageNumber" in res.data) {
+    return res.data as PaginatedStudents;
+  }
   return unwrapStudentList(res.data);
 }
 
 /** GET /api/students/class/{classId}/section/{sectionId} */
+export function listStudentsByClassAndSectionId(classId: number, sectionId: number, page: number, size: number): Promise<PaginatedStudents>;
+export function listStudentsByClassAndSectionId(classId: number, sectionId: number): Promise<StudentRow[]>;
 export async function listStudentsByClassAndSectionId(
   classId: number,
   sectionId: number,
-): Promise<StudentRow[]> {
-  const res = await api.get(`/api/students/class/${classId}/section/${sectionId}`);
+  page?: number,
+  size?: number,
+): Promise<StudentRow[] | PaginatedStudents> {
+  const params: Record<string, number> = {};
+  if (page !== undefined) params.page = page;
+  if (size !== undefined) params.size = size;
+
+  const res = await api.get(`/api/students/class/${classId}/section/${sectionId}`, { params });
+  if (page !== undefined && size !== undefined && res.data && typeof res.data === "object" && "pageNumber" in res.data) {
+    return res.data as PaginatedStudents;
+  }
   return unwrapStudentList(res.data);
 }
 
