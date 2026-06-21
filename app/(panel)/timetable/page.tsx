@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/select";
 
 const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-const PERIODS = [1, 2, 3, 4, 5, 6, 7, 8];
+const PERIODS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
 
 export default function TeacherTimetablePage() {
   const { data: classes = [], isLoading: classesLoading } = useClassesList();
@@ -23,12 +23,10 @@ export default function TeacherTimetablePage() {
   const [selectedClassId, setSelectedClassId] = useState<number | "">("");
   const [selectedSectionId, setSelectedSectionId] = useState<number | "">("");
 
-  // Fetch sections when class is selected
   const { data: sections = [], isLoading: sectionsLoading } = useSectionsByClassId(
     selectedClassId ? (selectedClassId as number) : undefined
   );
 
-  // Fetch timetable when both class and section are selected
   const { 
     data: timetable = [], 
     isLoading: timetableLoading, 
@@ -39,16 +37,36 @@ export default function TeacherTimetablePage() {
     selectedSectionId ? (selectedSectionId as number) : undefined
   );
 
-  // Create a lookup map for timetable slots: `${day}-${period}`
   const timetableMap = useMemo(() => {
     const map = new Map<string, typeof timetable[0]>();
     timetable.forEach((entry) => {
-      map.set(`${entry.day}-${entry.period}`, entry);
+      if (entry.period != null) {
+        map.set(`${entry.day}-${entry.period}`, entry);
+      }
     });
     return map;
   }, [timetable]);
 
-  // Create a teacher lookup map for names
+  const slotLabels = useMemo(() => {
+    const labels = new Map<number, string>();
+    let teachingCounter = 1;
+    
+    PERIODS.forEach((p) => {
+      const entriesInCol = DAYS.map(d => timetableMap.get(`${d}-${p}`)).filter(Boolean);
+      const isBreakCol = entriesInCol.length > 0 && entriesInCol.every(e => e?.type !== "PERIOD");
+      
+      if (isBreakCol) {
+        const breakName = entriesInCol[0]?.type?.replace("_", " ") || "Break";
+        labels.set(p, breakName);
+      } else {
+        labels.set(p, `Period ${teachingCounter}`);
+        teachingCounter++;
+      }
+    });
+    
+    return labels;
+  }, [timetableMap]);
+
   const teacherMap = useMemo(() => {
     const map = new Map<number, string>();
     teachers.forEach((t) => {
@@ -146,8 +164,8 @@ export default function TeacherTimetablePage() {
                   <tr className="border-b border-sky-100 bg-slate-50/50">
                     <th className="px-4 py-4 font-semibold text-slate-500 w-32 border-r border-sky-100">Day</th>
                     {PERIODS.map((p) => (
-                      <th key={p} className="px-4 py-4 font-semibold text-slate-500 text-center border-r border-sky-100 last:border-r-0">
-                        Period {p}
+                      <th key={p} className="px-4 py-4 font-semibold text-slate-500 text-center border-r border-sky-100 last:border-r-0 uppercase tracking-wider text-xs">
+                        {slotLabels.get(p)}
                       </th>
                     ))}
                   </tr>
@@ -160,17 +178,33 @@ export default function TeacherTimetablePage() {
                       </td>
                       {PERIODS.map((period) => {
                         const entry = timetableMap.get(`${day}-${period}`);
-                        const teacherName = entry ? teacherMap.get(entry.teacherId) || `ID: ${entry.teacherId}` : "";
+                        const teacherName = entry ? teacherMap.get(entry.teacherId!) || `ID: ${entry.teacherId}` : "";
 
                         return (
                           <td
                             key={period}
-                            className="px-3 py-4 border-r border-sky-100 last:border-r-0 text-center"
+                            className="px-3 py-4 border-r border-sky-100 last:border-r-0 text-center min-w-[120px]"
                           >
                             {entry ? (
                               <div className="space-y-1">
-                                <p className="font-semibold text-sky-900 text-sm">{entry.subject}</p>
-                                <p className="text-xs text-slate-500">{teacherName}</p>
+                                {entry.startTime && entry.endTime && (
+                                  <p className="text-[10px] font-medium text-slate-400 mb-1">
+                                    {entry.startTime.slice(0, 5)} - {entry.endTime.slice(0, 5)}
+                                  </p>
+                                )}
+                                {entry.type !== "PERIOD" ? (
+                                  <div className="flex flex-col items-center justify-center text-orange-500 pt-1">
+                                    <svg className="h-5 w-5 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <p className="font-bold text-[10px] uppercase tracking-wider">{entry?.type?.replace("_", " ")}</p>
+                                  </div>
+                                ) : (
+                                  <>
+                                    <p className="font-semibold text-sky-900 text-sm">{entry.subject}</p>
+                                    <p className="text-xs text-slate-500">{teacherName}</p>
+                                  </>
+                                )}
                               </div>
                             ) : (
                               <span className="text-slate-300 text-xs">Unassigned</span>
@@ -192,8 +226,8 @@ export default function TeacherTimetablePage() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M12 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
             </svg>
           </div>
-          <p className="text-lg font-semibold text-slate-800">Select Class & Section</p>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="text-lg font-semibold text-sky-900">Select Class & Section</p>
+          <p className="mt-1 text-sm text-sky-600/80">
             Choose a class and a section above to view the weekly timetable grid.
           </p>
         </div>

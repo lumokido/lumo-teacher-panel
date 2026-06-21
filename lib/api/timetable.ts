@@ -11,18 +11,24 @@ export type TimetableEntry = {
     name: string;
   } | null;
   day: string; // e.g. "Monday"
-  period: number; // e.g. 1, 2, 3...
-  subject: string;
-  teacherId: number;
+  period?: number | null; // e.g. 1, 2, 3... (null for breaks)
+  subject?: string | null;
+  teacherId?: number | null;
+  type?: string;
+  startTime?: string | null; // "HH:mm:ss"
+  endTime?: string | null;   // "HH:mm:ss"
 };
 
 export type SaveTimetablePayload = {
   classId: number;
   sectionId?: number | null;
   day: string;
-  period: number;
-  subject: string;
-  teacherId: number;
+  period?: number | null;
+  subject?: string | null;
+  teacherId?: number | null;
+  type?: string;
+  startTime?: string | null; // "HH:mm:ss" or "HH:mm"
+  endTime?: string | null;   // "HH:mm:ss" or "HH:mm"
 };
 
 export async function saveTimetableEntry(payload: SaveTimetablePayload): Promise<TimetableEntry> {

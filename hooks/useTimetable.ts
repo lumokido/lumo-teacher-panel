@@ -33,11 +33,14 @@ export function useTimetableByClass(classId?: number) {
   });
 }
 
-export function useTimetableByClassAndSection(classId?: number, sectionId?: number | null) {
+export function useTimetableByClassAndSection(classId?: number, sectionId?: number | null | "") {
   return useQuery({
-    queryKey: timetableKeys.byClassAndSection(classId || 0, sectionId || 0),
-    queryFn: () => getTimetableByClassAndSection(classId!, sectionId!),
-    enabled: !!classId && !!sectionId,
+    queryKey: timetableKeys.byClassAndSection(classId || 0, (sectionId as number) || 0),
+    queryFn: () => {
+      if (!sectionId) return getTimetableByClass(classId!);
+      return getTimetableByClassAndSection(classId!, sectionId as number);
+    },
+    enabled: !!classId, // sectionId is optional now
   });
 }
 
