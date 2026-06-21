@@ -169,16 +169,17 @@ export default function AdminStudentAddForm({ className }: Props) {
             />
           </label>
           <div className="block text-xs font-semibold text-slate-600 space-y-1.5">
-            Section
+            Section <span className="text-slate-400 font-normal">(Optional)</span>
             <Select
-              value={form.sectionName || ""}
-              onValueChange={(val) => setField("sectionName", val || "")}
+              value={form.sectionName || "none"}
+              onValueChange={(val) => setField("sectionName", val === "none" ? "" : val)}
               disabled={busy}
             >
               <SelectTrigger className="w-full rounded-xl border-violet-200 bg-white h-[44px] text-sm">
                 <SelectValue placeholder="Select section..." />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="none">No Section</SelectItem>
                 {sections.map((sec) => (
                   <SelectItem key={sec.id} value={sec.name}>
                     {sec.name}

@@ -3,6 +3,7 @@
 import type { AdminTeacherWriteBody } from "@/lib/api/adminTeachers";
 import { useTeachersList, useUpdateTeacher } from "@/hooks/useAdminTeachers";
 import { useMemo, useState, useEffect } from "react";
+import SubjectMultiSelect from "./teachers/SubjectMultiSelect";
 import Link from "next/link";
 import { toast } from "sonner";
 
@@ -201,18 +202,16 @@ export default function TeacherDetailPanel({ emailId }: Props) {
                 <p className="mt-1 text-xs text-slate-500">Comma-separated list of assigned classes.</p>
               </label>
 
-              <label className="block text-sm font-medium text-slate-600">
-                Subjects
-                <input
-                  required
-                  disabled={isLoading}
-                  className="mt-1.5 w-full rounded-xl border border-violet-200 px-4 py-2.5 text-sm text-slate-900 outline-none focus:ring-2 focus:ring-violet-300 disabled:bg-slate-50 disabled:text-slate-500"
+              <div className="space-y-1.5">
+                <label className="block text-sm font-medium text-slate-600">
+                  Subjects
+                </label>
+                <SubjectMultiSelect
                   value={form.subjects}
-                  onChange={(e) => setForm((f) => ({ ...f, subjects: e.target.value }))}
-                  placeholder="e.g. Math, Science"
+                  onChange={(val) => setForm((f) => ({ ...f, subjects: val }))}
                 />
-                <p className="mt-1 text-xs text-slate-500">Comma-separated list of subjects taught.</p>
-              </label>
+                <p className="mt-1 text-xs text-slate-500">Select subjects taught by this teacher.</p>
+              </div>
             </div>
 
             <div className="mt-6 flex justify-end">

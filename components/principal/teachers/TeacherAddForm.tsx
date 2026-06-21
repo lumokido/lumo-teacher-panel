@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAddTeacher } from "@/hooks/useAdminTeachers";
 import type { AdminTeacherWriteBody } from "@/lib/api/adminTeachers";
 import ClassMultiSelect from "./ClassMultiSelect";
+import SubjectMultiSelect from "./SubjectMultiSelect";
 import HomeroomSelect from "./HomeroomSelect";
 import Link from "next/link";
 
@@ -145,17 +146,18 @@ export default function TeacherAddForm() {
           </div>
         </div>
 
-        <label className="block text-sm font-medium text-slate-700">
-          Subjects Taught (comma-separated)
-          <input
-            required
-            disabled={busy}
-            placeholder="e.g. Mathematics, Physics"
-            className="mt-1.5 w-full rounded-xl border border-violet-200 px-4 py-2.5 text-sm text-slate-900 outline-none focus:ring-2 focus:ring-violet-300 disabled:bg-slate-50 transition-all"
+        <div className="space-y-1.5">
+          <label className="block text-sm font-medium text-slate-700">
+            Subjects Taught
+          </label>
+          <p className="text-xs text-slate-500 mb-2">
+            Select the subjects this teacher will teach.
+          </p>
+          <SubjectMultiSelect
             value={form.subjects}
-            onChange={(e) => setForm((f) => ({ ...f, subjects: e.target.value }))}
+            onChange={(val) => setForm((f) => ({ ...f, subjects: val }))}
           />
-        </label>
+        </div>
 
         <div className="mt-10 flex items-center justify-end gap-4 border-t border-slate-100 pt-6">
           <Link
