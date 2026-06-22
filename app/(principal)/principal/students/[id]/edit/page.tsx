@@ -2,13 +2,13 @@
 
 import { StudentForm } from "@/components/students/StudentForm";
 import { Button } from "@/components/ui/button";
-import { getStudentId, rowToForm } from "@/lib/api/students";
+import { rowToForm } from "@/lib/api/students";
 import { useStudentDetails, useUpdateStudent } from "@/hooks/useStudents";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-export default function EditStudentPage() {
+export default function EditPrincipalStudentPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   
@@ -24,7 +24,7 @@ export default function EditStudentPage() {
     e.preventDefault();
     if (!form) return;
     updateMut.mutate(form, {
-      onSuccess: () => router.push("/students"),
+      onSuccess: () => router.push(`/principal/students/${id}`),
     });
   }
 
@@ -36,7 +36,7 @@ export default function EditStudentPage() {
     return (
       <div className="space-y-4">
         <p className="text-sm text-rose-700">Student not found.</p>
-        <Button variant="outline" render={<Link href="/students" />}>
+        <Button variant="outline" render={<Link href="/principal/classes" />}>
           Back to directory
         </Button>
       </div>
@@ -46,7 +46,7 @@ export default function EditStudentPage() {
   return (
     <div className="space-y-6">
       <div>
-        <p className="mb-2 text-sm font-medium text-sky-600">Students</p>
+        <p className="mb-2 text-sm font-medium text-violet-600">Students</p>
         <h2 className="font-montserrat text-3xl font-semibold text-slate-900">
           Update student
         </h2>
