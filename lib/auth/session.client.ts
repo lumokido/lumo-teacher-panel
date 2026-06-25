@@ -1,6 +1,6 @@
 import {
   AUTH_COOKIE,
-  Alphores_TOKEN_KEY,
+  Vignan_TOKEN_KEY,
   REFRESH_TOKEN_COOKIE,
   ROLE_COOKIE,
   type AuthRole,
@@ -51,7 +51,7 @@ export function persistAuthSession(
   setBrowserCookie(ROLE_COOKIE, role);
 
   try {
-    localStorage.setItem(Alphores_TOKEN_KEY, token);
+    localStorage.setItem(Vignan_TOKEN_KEY, token);
     sessionStorage.setItem("accessToken", token);
     localStorage.setItem("refreshToken", refreshToken || "");
     sessionStorage.setItem("type", role);
@@ -68,7 +68,7 @@ export function clearAuthSession() {
   clearBrowserCookie(ROLE_COOKIE);
 
   try {
-    localStorage.removeItem(Alphores_TOKEN_KEY);
+    localStorage.removeItem(Vignan_TOKEN_KEY);
     sessionStorage.removeItem("accessToken");
     sessionStorage.removeItem("type");
   } catch {

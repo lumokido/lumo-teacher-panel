@@ -38,7 +38,7 @@ export default function PanelLayout({
               <Menu className="h-6 w-6" />
             </button>
             <span className="text-sm font-medium text-slate-500">
-              Alphores teacher workspace
+              Vignan teacher workspace
             </span>
           </div>
           <span className="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-sky-800">

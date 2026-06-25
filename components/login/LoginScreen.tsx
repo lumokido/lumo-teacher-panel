@@ -46,8 +46,8 @@ export default function LoginScreen() {
         <div className="relative z-10 flex items-center gap-3">
           <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/10 ring-1 ring-white/20 backdrop-blur-sm">
             <Image
-              src="/logo.svg"
-              alt="Alphores"
+              src="/image.png"
+              alt="Vignan"
               width={32}
               height={32}
               className="h-8 w-8 object-contain"
@@ -56,7 +56,7 @@ export default function LoginScreen() {
           </div>
           <div>
             <p className="text-xs font-medium uppercase tracking-[0.2em] text-sky-300/90">
-              Alphores
+              Vignan
             </p>
             <p className="font-montserrat text-sm font-semibold text-white/90">
               School Management
@@ -70,7 +70,7 @@ export default function LoginScreen() {
               <div className="absolute -inset-1 rounded-full bg-gradient-to-br from-sky-400/40 to-indigo-400/30 blur-sm" />
               <div className="relative h-36 w-36 overflow-hidden rounded-full ring-4 ring-white/20 shadow-2xl sm:h-40 sm:w-40 lg:h-44 lg:w-44">
                 <Image
-                  src="/director.png"
+                  src="/director2.png"
                   alt="School Director"
                   width={176}
                   height={176}
@@ -89,7 +89,7 @@ export default function LoginScreen() {
                 sync.&rdquo;
               </blockquote>
               <p className="mt-4 text-sm text-slate-300">
-                Welcome to the Alphores staff portal — your hub for classes,
+                Welcome to the Vignan staff portal — your hub for classes,
                 attendance, exams, and school administration.
               </p>
             </div>
@@ -112,7 +112,7 @@ export default function LoginScreen() {
         </div>
 
         <p className="relative z-10 mt-8 hidden text-xs text-slate-500 lg:block">
-          © {new Date().getFullYear()} Alphores. All rights reserved.
+          © {new Date().getFullYear()} Vignan. All rights reserved.
         </p>
       </section>
 

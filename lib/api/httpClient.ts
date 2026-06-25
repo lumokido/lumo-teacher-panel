@@ -5,7 +5,7 @@ import axios, {
     AxiosResponse,
     InternalAxiosRequestConfig,
   } from "axios";
-import { Alphores_TOKEN_KEY } from "@/lib/auth/constants";
+import { Vignan_TOKEN_KEY } from "@/lib/auth/constants";
 import { toast } from "sonner";
 
   // const API_BASE_URL = "http://localhost:5050/api";
@@ -60,7 +60,7 @@ import { toast } from "sonner";
 
     return (
       localStorage.getItem("accessToken") ||
-      localStorage.getItem(Alphores_TOKEN_KEY)
+      localStorage.getItem(Vignan_TOKEN_KEY)
     );
   }
 
@@ -74,7 +74,7 @@ import { toast } from "sonner";
     if (typeof window === "undefined") return;
 
     localStorage.setItem("accessToken", token);
-    localStorage.setItem(Alphores_TOKEN_KEY, token);
+    localStorage.setItem(Vignan_TOKEN_KEY, token);
   }
 
   function setRefreshToken(token: string) {
@@ -87,7 +87,7 @@ import { toast } from "sonner";
     if (typeof window === "undefined") return;
 
     localStorage.removeItem("accessToken");
-    localStorage.removeItem(Alphores_TOKEN_KEY);
+    localStorage.removeItem(Vignan_TOKEN_KEY);
     localStorage.removeItem("refreshToken");
     localStorage.removeItem("type");
   }
