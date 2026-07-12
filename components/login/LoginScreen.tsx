@@ -44,22 +44,22 @@ export default function LoginScreen() {
         />
 
         <div className="relative z-10 flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/10 ring-1 ring-white/20 backdrop-blur-sm">
+          <div className="flex h-20 w-20 items-center justify-center rounded-xl bg-white/10 ring-1 ring-white/20 backdrop-blur-sm">
             <Image
-              src="/image.png"
+              src="/logo.svg"
               alt="Vignan"
-              width={32}
-              height={32}
-              className="h-8 w-8 object-contain"
+              width={100}
+              height={100}
+              className="h-100 w-100 object-contain"
               priority
             />
           </div>
           <div>
-            <p className="text-xs font-medium uppercase tracking-[0.2em] text-sky-300/90">
-              Vignan
+            <p className="text-lg font-medium uppercase tracking-[0.2em] text-sky-300/90">
+              Alphores  School
             </p>
             <p className="font-montserrat text-sm font-semibold text-white/90">
-              School Management
+              Teacher Panel
             </p>
           </div>
         </div>
@@ -70,7 +70,7 @@ export default function LoginScreen() {
               <div className="absolute -inset-1 rounded-full bg-gradient-to-br from-sky-400/40 to-indigo-400/30 blur-sm" />
               <div className="relative h-36 w-36 overflow-hidden rounded-full ring-4 ring-white/20 shadow-2xl sm:h-40 sm:w-40 lg:h-44 lg:w-44">
                 <Image
-                  src="/director2.png"
+                  src="/director.png"
                   alt="School Director"
                   width={176}
                   height={176}

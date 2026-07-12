@@ -46,7 +46,7 @@ export default function PrincipalLayout({
               Director Panel
             </span>
             <Image 
-              src="/director2.png" 
+              src="/director.png" 
               alt="Director Profile" 
               width={40} 
               height={40} 
