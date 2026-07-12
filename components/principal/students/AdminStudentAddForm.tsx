@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useClassesList, useSectionsByClassId } from "@/hooks/useAdminClasses";
-import { addStudent, uploadStudentPhoto, emptyStudentForm, type StudentWriteBody } from "@/lib/api/students";
+import { addStudent, emptyStudentForm, type StudentWriteBody } from "@/lib/api/students";
 import { StudentPhotoUploader } from "@/components/students/StudentPhotoUploader";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
@@ -37,7 +37,6 @@ export default function AdminStudentAddForm({ className }: Props) {
     setBusy(true);
 
     try {
-      // Create the student with the pre-uploaded photo URL
       await addStudent({
         ...form,
         studentClass: decodedClassName,
@@ -54,6 +53,9 @@ export default function AdminStudentAddForm({ className }: Props) {
       setBusy(false);
     }
   }
+
+  const inputClass =
+    "mt-1.5 w-full rounded-xl border border-violet-200 px-3.5 py-2.5 text-sm text-slate-900 outline-hidden focus:ring-3 focus:border-violet-400 focus:ring-violet-100 transition disabled:bg-slate-50";
 
   return (
     <div className="mx-auto max-w-2xl rounded-2xl border border-violet-100 bg-white p-8 shadow-sm">
@@ -74,16 +76,38 @@ export default function AdminStudentAddForm({ className }: Props) {
       </div>
 
       <form className="space-y-5" onSubmit={onSubmit}>
-        <div className="grid gap-4 sm:grid-cols-2">
+        <label className="block text-xs font-semibold text-slate-600">
+          Admission ID
+          <input
+            required
+            disabled={busy}
+            className={inputClass}
+            value={form.studentId}
+            onChange={(e) => setField("studentId", e.target.value)}
+            placeholder="e.g. ALP260099"
+          />
+        </label>
+
+        <div className="grid gap-4 sm:grid-cols-3">
           <label className="block text-xs font-semibold text-slate-600">
             First name
             <input
               required
               disabled={busy}
-              className="mt-1.5 w-full rounded-xl border border-violet-200 px-3.5 py-2.5 text-sm text-slate-900 outline-hidden focus:ring-3 focus:border-violet-400 focus:ring-violet-100 transition disabled:bg-slate-50"
+              className={inputClass}
               value={form.firstName}
               onChange={(e) => setField("firstName", e.target.value)}
-              placeholder="e.g. Rahul"
+              placeholder="e.g. John"
+            />
+          </label>
+          <label className="block text-xs font-semibold text-slate-600">
+            Middle name
+            <input
+              disabled={busy}
+              className={inputClass}
+              value={form.middleName}
+              onChange={(e) => setField("middleName", e.target.value)}
+              placeholder="e.g. Robert"
             />
           </label>
           <label className="block text-xs font-semibold text-slate-600">
@@ -91,10 +115,10 @@ export default function AdminStudentAddForm({ className }: Props) {
             <input
               required
               disabled={busy}
-              className="mt-1.5 w-full rounded-xl border border-violet-200 px-3.5 py-2.5 text-sm text-slate-900 outline-hidden focus:ring-3 focus:border-violet-400 focus:ring-violet-100 transition disabled:bg-slate-50"
+              className={inputClass}
               value={form.lastName}
               onChange={(e) => setField("lastName", e.target.value)}
-              placeholder="e.g. Sharma"
+              placeholder="e.g. Doe"
             />
           </label>
         </div>
@@ -106,38 +130,13 @@ export default function AdminStudentAddForm({ className }: Props) {
               required
               disabled={busy}
               type="tel"
-              className="mt-1.5 w-full rounded-xl border border-violet-200 px-3.5 py-2.5 text-sm text-slate-900 outline-hidden focus:ring-3 focus:border-violet-400 focus:ring-violet-100 transition disabled:bg-slate-50"
+              className={inputClass}
               value={form.mobileNumber}
               onChange={(e) => setField("mobileNumber", e.target.value)}
               placeholder="10-digit mobile number"
             />
           </label>
 
-          <label className="block text-xs font-semibold text-slate-600">
-            Parent name
-            <input
-              required
-              disabled={busy}
-              className="mt-1.5 w-full rounded-xl border border-violet-200 px-3.5 py-2.5 text-sm text-slate-900 outline-hidden focus:ring-3 focus:border-violet-400 focus:ring-violet-100 transition disabled:bg-slate-50"
-              value={form.parentName}
-              onChange={(e) => setField("parentName", e.target.value)}
-              placeholder="Parent or Guardian's full name"
-            />
-          </label>
-        </div>
-
-        <div className="grid gap-4 sm:grid-cols-2">
-          <label className="block text-xs font-semibold text-slate-600">
-            Date of birth
-            <input
-              required
-              disabled={busy}
-              type="date"
-              className="mt-1.5 w-full rounded-xl border border-violet-200 px-3.5 py-2.5 text-sm text-slate-900 outline-hidden focus:ring-3 focus:border-violet-400 focus:ring-violet-100 transition disabled:bg-slate-50"
-              value={form.dateOfBirth}
-              onChange={(e) => setField("dateOfBirth", e.target.value)}
-            />
-          </label>
           <div className="block text-xs font-semibold text-slate-600 space-y-1.5">
             Gender
             <Select
@@ -159,7 +158,79 @@ export default function AdminStudentAddForm({ className }: Props) {
           </div>
         </div>
 
+        <div className="grid gap-4 sm:grid-cols-2">
+          <label className="block text-xs font-semibold text-slate-600">
+            Father name
+            <input
+              required
+              disabled={busy}
+              className={inputClass}
+              value={form.fatherName}
+              onChange={(e) => setField("fatherName", e.target.value)}
+              placeholder="Father's full name"
+            />
+          </label>
+          <label className="block text-xs font-semibold text-slate-600">
+            Mother name
+            <input
+              required
+              disabled={busy}
+              className={inputClass}
+              value={form.motherName}
+              onChange={(e) => setField("motherName", e.target.value)}
+              placeholder="Mother's full name"
+            />
+          </label>
+        </div>
+
         <div className="grid gap-4 sm:grid-cols-3">
+          <label className="block text-xs font-semibold text-slate-600">
+            Father Aadhar number
+            <input
+              required
+              disabled={busy}
+              className={inputClass}
+              value={form.fatherAadharNumber}
+              onChange={(e) => setField("fatherAadharNumber", e.target.value)}
+              placeholder="1234-5678-9012"
+            />
+          </label>
+          <label className="block text-xs font-semibold text-slate-600">
+            Mother Aadhar number
+            <input
+              required
+              disabled={busy}
+              className={inputClass}
+              value={form.motherAadharNumber}
+              onChange={(e) => setField("motherAadharNumber", e.target.value)}
+              placeholder="9876-5432-1098"
+            />
+          </label>
+          <label className="block text-xs font-semibold text-slate-600">
+            Student Aadhar number
+            <input
+              required
+              disabled={busy}
+              className={inputClass}
+              value={form.studentAadharNumber}
+              onChange={(e) => setField("studentAadharNumber", e.target.value)}
+              placeholder="1111-2222-3333"
+            />
+          </label>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <label className="block text-xs font-semibold text-slate-600">
+            Date of birth
+            <input
+              required
+              disabled={busy}
+              type="date"
+              className={inputClass}
+              value={form.dateOfBirth}
+              onChange={(e) => setField("dateOfBirth", e.target.value)}
+            />
+          </label>
           <label className="block text-xs font-semibold text-slate-600">
             Class
             <input
@@ -168,37 +239,27 @@ export default function AdminStudentAddForm({ className }: Props) {
               value={decodedClassName}
             />
           </label>
-          <div className="block text-xs font-semibold text-slate-600 space-y-1.5">
-            Section <span className="text-slate-400 font-normal">(Optional)</span>
-            <Select
-              value={form.sectionName || "none"}
-              onValueChange={(val) => setField("sectionName", val === "none" || !val ? "" : val)}
-              disabled={busy}
-            >
-              <SelectTrigger className="w-full rounded-xl border-violet-200 bg-white h-[44px] text-sm">
-                <SelectValue placeholder="Select section..." />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="none">No Section</SelectItem>
-                {sections.map((sec) => (
-                  <SelectItem key={sec.id} value={sec.name}>
-                    {sec.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <label className="block text-xs font-semibold text-slate-600">
-            Roll number
-            <input
-              required
-              disabled={busy}
-              className="mt-1.5 w-full rounded-xl border border-violet-200 px-3.5 py-2.5 text-sm text-slate-900 outline-hidden focus:ring-3 focus:border-violet-400 focus:ring-violet-100 transition disabled:bg-slate-50 h-[44px]"
-              value={form.rollNumber || ""}
-              onChange={(e) => setField("rollNumber", e.target.value)}
-              placeholder="e.g. 101"
-            />
-          </label>
+        </div>
+
+        <div className="block text-xs font-semibold text-slate-600 space-y-1.5">
+          Section <span className="text-slate-400 font-normal">(Optional)</span>
+          <Select
+            value={form.sectionName || "none"}
+            onValueChange={(val) => setField("sectionName", val === "none" || !val ? "" : val)}
+            disabled={busy}
+          >
+            <SelectTrigger className="w-full rounded-xl border-violet-200 bg-white h-[44px] text-sm">
+              <SelectValue placeholder="Select section..." />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">No Section</SelectItem>
+              {sections.map((sec) => (
+                <SelectItem key={sec.id} value={sec.name}>
+                  {sec.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">

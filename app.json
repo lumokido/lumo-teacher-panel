@@ -6,7 +6,7 @@
       }
     },
     "ios": {
-      "bundleIdentifier": "com.anasmohamad.Vignanteacherpanel",
+      "bundleIdentifier": "com.anasmohamad.Alphoresteacherpanel",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }

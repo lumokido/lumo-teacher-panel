@@ -46,7 +46,7 @@ export default function PrincipalDashboardPage() {
       <div>
         <p className="mb-2 text-sm font-medium text-violet-600">Welcome back, Director</p>
         <h2 className="font-montserrat text-3xl font-semibold text-slate-900">
-          Vignan  Administration
+          Alphores  Administration
         </h2>
         <p className="mt-2 text-slate-600">
           Get a quick overview of your school's daily stats, announcements, and quick tools.

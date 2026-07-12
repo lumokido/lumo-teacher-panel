@@ -47,7 +47,7 @@ export default function LoginScreen() {
           <div className="flex h-20 w-20 items-center justify-center rounded-xl bg-white/10 ring-1 ring-white/20 backdrop-blur-sm">
             <Image
               src="/logo.svg"
-              alt="Vignan"
+              alt="Alphores"
               width={100}
               height={100}
               className="h-100 w-100 object-contain"
@@ -89,7 +89,7 @@ export default function LoginScreen() {
                 sync.&rdquo;
               </blockquote>
               <p className="mt-4 text-sm text-slate-300">
-                Welcome to the Vignan staff portal — your hub for classes,
+                Welcome to the Alphores staff portal — your hub for classes,
                 attendance, exams, and school administration.
               </p>
             </div>
@@ -112,7 +112,7 @@ export default function LoginScreen() {
         </div>
 
         <p className="relative z-10 mt-8 hidden text-xs text-slate-500 lg:block">
-          © {new Date().getFullYear()} Vignan. All rights reserved.
+          © {new Date().getFullYear()} Alphores. All rights reserved.
         </p>
       </section>
 

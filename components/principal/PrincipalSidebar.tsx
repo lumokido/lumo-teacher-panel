@@ -49,9 +49,9 @@ export default function PrincipalSidebar() {
   return (
     <aside className="w-72 rounded-2xl border border-violet-100 bg-white/90 p-2 shadow-sm backdrop-blur">
       <div className="mb-6 flex h-[100px] items-center justify-center gap-2 text-center">
-        <Image src="/logo.svg" alt="Vignan" width={100} height={100} />
+        <Image src="/logo.svg" alt="Alphores" width={100} height={100} />
         <h1 className="text-xl font-semibold font-montserrat text-violet-950">
-          Vignan Director
+          Alphores Director
         </h1>
       </div>
 

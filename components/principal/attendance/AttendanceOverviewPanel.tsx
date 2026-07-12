@@ -2,6 +2,7 @@
 
 import { useAttendanceStats, useAttendanceHistory } from "@/hooks/useAttendance";
 import { format } from "date-fns";
+import ClassesGrid from "./ClassesGrid";
 
 export default function AttendanceOverviewPanel({ date }: { date: string }) {
   const { data: stats, isLoading: statsLoading } = useAttendanceStats(date);
@@ -58,6 +59,10 @@ export default function AttendanceOverviewPanel({ date }: { date: string }) {
       </div>
 
       {/* Full History Data Table */}
+      <section className="mb-6">
+        <ClassesGrid date={date} />
+      </section>
+      
       <div className="rounded-2xl border border-violet-100 bg-white shadow-sm overflow-hidden">
         <div className="border-b border-violet-100 bg-slate-50/50 px-6 py-4 flex items-center justify-between">
           <div>

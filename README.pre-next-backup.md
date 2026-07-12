@@ -1,1 +1,1 @@
-# Vignan-teacher-panel
+# Alphores-teacher-panel

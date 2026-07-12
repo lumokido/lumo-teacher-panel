@@ -63,10 +63,12 @@ export function StudentForm({
               disabled={busy}
             />
           </Field>
-          <Field label="Middle name" className="sm:col-span-1">
+          <Field label="Admission ID" className="sm:col-span-2">
             <Input
-              value={form.middleName}
-              onChange={(e) => setField("middleName", e.target.value)}
+              required
+              value={form.studentId}
+              onChange={(e) => setField("studentId", e.target.value)}
+              placeholder="e.g. ALP260099"
               disabled={busy}
             />
           </Field>
@@ -78,11 +80,10 @@ export function StudentForm({
               disabled={busy}
             />
           </Field>
-          <Field label="Parent name" className="sm:col-span-2">
+          <Field label="Middle name" className="sm:col-span-1">
             <Input
-              required
-              value={form.parentName}
-              onChange={(e) => setField("parentName", e.target.value)}
+              value={form.middleName}
+              onChange={(e) => setField("middleName", e.target.value)}
               disabled={busy}
             />
           </Field>
@@ -111,6 +112,47 @@ export function StudentForm({
               ))}
             </select>
           </Field>
+          <Field label="Father name" className="sm:col-span-1">
+            <Input
+              required
+              value={form.fatherName}
+              onChange={(e) => setField("fatherName", e.target.value)}
+              disabled={busy}
+            />
+          </Field>
+          <Field label="Mother name" className="sm:col-span-1">
+            <Input
+              required
+              value={form.motherName}
+              onChange={(e) => setField("motherName", e.target.value)}
+              disabled={busy}
+            />
+          </Field>
+          <Field label="Father Aadhar" className="sm:col-span-1">
+            <Input
+              required
+              value={form.fatherAadharNumber}
+              onChange={(e) => setField("fatherAadharNumber", e.target.value)}
+              disabled={busy}
+            />
+          </Field>
+          <Field label="Mother Aadhar" className="sm:col-span-1">
+            <Input
+              required
+              value={form.motherAadharNumber}
+              onChange={(e) => setField("motherAadharNumber", e.target.value)}
+              disabled={busy}
+            />
+          </Field>
+          <Field label="Student Aadhar" className="sm:col-span-2">
+            <Input
+              required
+              value={form.studentAadharNumber}
+              onChange={(e) => setField("studentAadharNumber", e.target.value)}
+              placeholder="1111-2222-3333"
+              disabled={busy}
+            />
+          </Field>
           <Field label="Class" className="sm:col-span-1">
             <Input
               required
@@ -120,16 +162,14 @@ export function StudentForm({
               disabled={busy}
             />
           </Field>
-          <Field label="Roll Number" className="sm:col-span-1">
+          <Field label="Section" className="sm:col-span-1">
             <Input
-              required
-              value={form.rollNumber}
-              onChange={(e) => setField("rollNumber", e.target.value)}
-              placeholder="e.g. 101"
+              value={form.sectionName || ""}
+              onChange={(e) => setField("sectionName", e.target.value)}
+              placeholder="e.g. A"
               disabled={busy}
             />
           </Field>
-      
         </CardContent>
         <CardFooter className="justify-end gap-2 border-t border-sky-100 bg-transparent">
           <Button variant="outline" type="button" render={<Link href="/students" />} disabled={busy}>

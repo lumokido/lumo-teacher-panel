@@ -39,7 +39,7 @@ export default function PrincipalLayout({
           </button>
           
           <span className="text-sm font-medium text-slate-500">
-            Vignan administration
+            Alphores administration
           </span>
           <div className="ml-auto flex items-center gap-4">
             <span className="hidden sm:inline-block rounded-full border border-violet-200 bg-violet-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-violet-800">

@@ -1,23 +1,43 @@
 import { api } from "@/lib/api/httpClient";
 
 export type StudentWriteBody = {
+  studentId: string;
   firstName: string;
   lastName: string;
   middleName: string;
   mobileNumber: string;
-  parentName: string;
+  fatherName: string;
+  motherName: string;
+  fatherAadharNumber: string;
+  motherAadharNumber: string;
+  studentAadharNumber: string;
   dateOfBirth: string;
   gender: string;
   studentClass: string;
   sectionName?: string;
-  rollNumber?: string;
   profilePhotoUrl?: string | null;
 };
 
-export type StudentRow = StudentWriteBody & {
+export type StudentRow = {
   id?: number | string;
   studentId?: number | string;
   admissionId?: string;
+  firstName: string;
+  lastName: string;
+  middleName?: string;
+  mobileNumber?: string;
+  fatherName?: string;
+  motherName?: string;
+  fatherAadharNumber?: string;
+  motherAadharNumber?: string;
+  studentAadharNumber?: string;
+  parentName?: string;
+  dateOfBirth?: string;
+  gender?: string;
+  studentClass?: string;
+  sectionName?: string;
+  rollNumber?: string;
+  profilePhotoUrl?: string | null;
 };
 
 export function getStudentId(row: StudentRow | StudentDetailResponse): string | null {
@@ -39,32 +59,40 @@ export function studentDisplayName(row: StudentRow): string {
 
 export function emptyStudentForm(): StudentWriteBody {
   return {
+    studentId: "",
     firstName: "",
     lastName: "",
     middleName: "",
     mobileNumber: "",
-    parentName: "",
+    fatherName: "",
+    motherName: "",
+    fatherAadharNumber: "",
+    motherAadharNumber: "",
+    studentAadharNumber: "",
     dateOfBirth: "",
-    gender: "Male",
+    gender: "MALE",
     studentClass: "",
     sectionName: "",
-    rollNumber: "",
     profilePhotoUrl: "",
   };
 }
 
 export function rowToForm(row: StudentRow): StudentWriteBody {
   return {
+    studentId: getAdmissionId(row) ?? "",
     firstName: row.firstName ?? "",
     lastName: row.lastName ?? "",
     middleName: row.middleName ?? "",
     mobileNumber: row.mobileNumber ?? "",
-    parentName: row.parentName ?? "",
+    fatherName: row.fatherName ?? row.parentName ?? "",
+    motherName: row.motherName ?? "",
+    fatherAadharNumber: row.fatherAadharNumber ?? "",
+    motherAadharNumber: row.motherAadharNumber ?? "",
+    studentAadharNumber: row.studentAadharNumber ?? "",
     dateOfBirth: row.dateOfBirth ?? "",
-    gender: row.gender ?? "Male",
+    gender: row.gender ?? "MALE",
     studentClass: row.studentClass ?? "",
     sectionName: row.sectionName ?? "",
-    rollNumber: row.rollNumber ?? "",
     profilePhotoUrl: row.profilePhotoUrl ?? "",
   };
 }
@@ -120,11 +148,17 @@ export async function updateStudent(
 export type StudentDetailResponse = {
   id?: number | string;
   studentId?: number | string;
+  admissionId?: string;
   firstName: string;
   lastName: string;
   middleName: string;
   mobileNumber: string;
-  parentName: string;
+  fatherName?: string;
+  motherName?: string;
+  fatherAadharNumber?: string;
+  motherAadharNumber?: string;
+  studentAadharNumber?: string;
+  parentName?: string;
   dateOfBirth: string;
   gender: string;
   studentClass: string;
