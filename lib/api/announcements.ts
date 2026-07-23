@@ -23,3 +23,20 @@ export async function createAnnouncement(body: AnnouncementWriteBody): Promise<A
   const res = await api.post("/api/announcements", body);
   return res.data;
 }
+
+export async function getAnnouncement(id: number): Promise<AnnouncementRow> {
+  const res = await api.get(`/api/announcements/${id}`);
+  return res.data;
+}
+
+export async function updateAnnouncement(
+  id: number,
+  body: AnnouncementWriteBody,
+): Promise<AnnouncementRow> {
+  const res = await api.put(`/api/announcements/${id}`, body);
+  return res.data;
+}
+
+export async function deleteAnnouncement(id: number): Promise<void> {
+  await api.delete(`/api/announcements/${id}`);
+}

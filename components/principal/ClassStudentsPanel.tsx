@@ -102,7 +102,7 @@ export default function ClassStudentsPanel({ className }: Props) {
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
             <p className="mb-2 text-sm font-medium text-violet-600">
-              Class details
+              Class details 
             </p>
             <h2 className="font-montserrat text-3xl font-semibold text-slate-900">
               {decodedName}
@@ -214,7 +214,9 @@ export default function ClassStudentsPanel({ className }: Props) {
                     {s.mobileNumber || "—"}
                   </td>
                   <td className="px-4 py-3 text-slate-700">
-                    {s.parentName || "—"}
+                    {[s.fatherName, s.motherName].filter(Boolean).join(" / ") ||
+                      s.parentName ||
+                      "—"}
                   </td>
                   <td className="px-4 py-3 text-slate-700">
                     {s.gender || "—"}

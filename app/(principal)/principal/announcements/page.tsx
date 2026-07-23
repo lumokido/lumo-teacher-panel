@@ -1,7 +1,13 @@
 "use client";
 
-import { useState } from "react";
-import { useAnnouncements, useCreateAnnouncement } from "@/hooks/useAnnouncements";
+import { useEffect, useState } from "react";
+import {
+  useAnnouncements,
+  useAnnouncement,
+  useCreateAnnouncement,
+  useUpdateAnnouncement,
+  useDeleteAnnouncement,
+} from "@/hooks/useAnnouncements";
 import { format } from "date-fns";
 import type { AnnouncementType, AnnouncementWriteBody } from "@/lib/api/announcements";
 import {
@@ -11,47 +17,95 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Loader2, Pencil, Trash2 } from "lucide-react";
+
+const emptyForm = (): AnnouncementWriteBody => ({
+  title: "",
+  description: "",
+  type: "ANNOUNCEMENT",
+  startDate: format(new Date(), "yyyy-MM-dd"),
+});
 
 export default function PrincipalAnnouncementsPage() {
-  const { data: announcements = [], isLoading, isError, error, refetch } = useAnnouncements();
+  const { data: announcements = [], isLoading, isError, refetch } = useAnnouncements();
   const createMut = useCreateAnnouncement();
+  const updateMut = useUpdateAnnouncement();
+  const deleteMut = useDeleteAnnouncement();
 
   const [filterType, setFilterType] = useState<"ALL" | AnnouncementType>("ALL");
   const [showModal, setShowModal] = useState(false);
-  const [formData, setFormData] = useState<AnnouncementWriteBody>({
-    title: "",
-    description: "",
-    type: "ANNOUNCEMENT",
-    startDate: format(new Date(), "yyyy-MM-dd"),
-  });
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [deleteTitle, setDeleteTitle] = useState("");
+  const [formData, setFormData] = useState<AnnouncementWriteBody>(emptyForm);
+
+  const { data: editingAnnouncement, isLoading: editingLoading } = useAnnouncement(editingId);
 
   const filteredAnnouncements = announcements.filter((a) => {
     if (filterType === "ALL") return true;
     return a.type === filterType;
   });
 
-  function openModal() {
+  const isSaving = createMut.isPending || updateMut.isPending;
+  const isEditMode = editingId != null;
+
+  useEffect(() => {
+    if (!editingAnnouncement) return;
     setFormData({
-      title: "",
-      description: "",
-      type: "ANNOUNCEMENT",
-      startDate: format(new Date(), "yyyy-MM-dd"),
+      title: editingAnnouncement.title,
+      description: editingAnnouncement.description,
+      type: editingAnnouncement.type,
+      startDate: editingAnnouncement.startDate,
     });
+  }, [editingAnnouncement]);
+
+  function openCreateModal() {
+    setEditingId(null);
+    setFormData(emptyForm());
+    setShowModal(true);
+  }
+
+  function openEditModal(id: number) {
+    setEditingId(id);
     setShowModal(true);
   }
 
   function closeModal() {
     setShowModal(false);
+    setEditingId(null);
+  }
+
+  function openDelete(id: number, title: string) {
+    setDeleteId(id);
+    setDeleteTitle(title);
+  }
+
+  function closeDelete() {
+    setDeleteId(null);
+    setDeleteTitle("");
   }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!formData.title.trim() || !formData.description.trim()) return;
 
+    if (isEditMode && editingId != null) {
+      updateMut.mutate(
+        { id: editingId, body: formData },
+        { onSuccess: () => closeModal() },
+      );
+      return;
+    }
+
     createMut.mutate(formData, {
-      onSuccess: () => {
-        closeModal();
-      },
+      onSuccess: () => closeModal(),
+    });
+  }
+
+  function confirmDelete() {
+    if (deleteId == null) return;
+    deleteMut.mutate(deleteId, {
+      onSuccess: () => closeDelete(),
     });
   }
 
@@ -70,7 +124,7 @@ export default function PrincipalAnnouncementsPage() {
         </div>
 
         <button
-          onClick={openModal}
+          onClick={openCreateModal}
           className="inline-flex items-center gap-2 rounded-xl bg-violet-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-violet-700 active:scale-[0.98]"
         >
           <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -133,7 +187,7 @@ export default function PrincipalAnnouncementsPage() {
             >
               <div className="absolute inset-0 bg-gradient-to-br from-violet-50/40 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
               <div className="relative space-y-4">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between gap-2">
                   <span
                     className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${
                       item.type === "EVENT"
@@ -143,11 +197,29 @@ export default function PrincipalAnnouncementsPage() {
                   >
                     {item.type === "EVENT" ? "Event" : "Bulletin"}
                   </span>
-                  <div className="flex items-center gap-1 text-xs font-medium text-slate-500">
-                    <svg className="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                    {format(new Date(item.startDate), "MMM dd, yyyy")}
+                  <div className="flex items-center gap-1">
+                    <div className="mr-1 flex items-center gap-1 text-xs font-medium text-slate-500">
+                      <svg className="h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      {format(new Date(item.startDate), "MMM dd, yyyy")}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => openEditModal(item.id)}
+                      className="rounded-lg p-1.5 text-slate-400 transition hover:bg-violet-50 hover:text-violet-700"
+                      aria-label="Edit announcement"
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => openDelete(item.id, item.title)}
+                      className="rounded-lg p-1.5 text-slate-400 transition hover:bg-rose-50 hover:text-rose-600"
+                      aria-label="Delete announcement"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
                   </div>
                 </div>
 
@@ -165,7 +237,7 @@ export default function PrincipalAnnouncementsPage() {
         </div>
       )}
 
-      {/* Creation Modal */}
+      {/* Create / Edit Modal */}
       {showModal ? (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm"
@@ -180,83 +252,139 @@ export default function PrincipalAnnouncementsPage() {
             onClick={(e) => e.stopPropagation()}
           >
             <h3 id="modal-title" className="font-montserrat text-xl font-bold text-slate-900">
-              Create Event & Bulletin Post
+              {isEditMode ? "Edit Announcement" : "Create Event & Bulletin Post"}
             </h3>
 
-            <form className="mt-4 space-y-4" onSubmit={handleSubmit}>
-              <label className="block text-xs font-semibold text-slate-600">
-                Post Title
-                <input
-                  required
-                  autoFocus
-                  placeholder="e.g. Science Fair 2026"
-                  disabled={createMut.isPending}
-                  className="mt-1 w-full rounded-lg border border-violet-200 px-3 py-2 text-sm text-slate-950 placeholder-slate-400 outline-none focus:ring-2 focus:ring-violet-300 focus:border-violet-400"
-                  value={formData.title}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, title: e.target.value }))}
-                />
-              </label>
-
-              <div className="block text-xs font-semibold text-slate-600 space-y-1.5">
-                Post Type
-                <Select
-                  value={formData.type}
-                  onValueChange={(val) => setFormData((prev) => ({ ...prev, type: val as AnnouncementType }))}
-                  disabled={createMut.isPending}
-                >
-                  <SelectTrigger className="w-full rounded-lg border border-violet-200 bg-white h-[38px] text-sm">
-                    <SelectValue placeholder="Select type..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="ANNOUNCEMENT">Bulletin Announcement</SelectItem>
-                    <SelectItem value="EVENT">Calendar Event</SelectItem>
-                  </SelectContent>
-                </Select>
+            {isEditMode && editingLoading ? (
+              <div className="flex items-center justify-center gap-2 py-12 text-slate-500">
+                <Loader2 className="h-5 w-5 animate-spin text-violet-500" />
+                Loading announcement…
               </div>
+            ) : (
+              <form className="mt-4 space-y-4" onSubmit={handleSubmit}>
+                <label className="block text-xs font-semibold text-slate-600">
+                  Post Title
+                  <input
+                    required
+                    autoFocus
+                    placeholder="e.g. Science Fair 2026"
+                    disabled={isSaving}
+                    className="mt-1 w-full rounded-lg border border-violet-200 px-3 py-2 text-sm text-slate-950 placeholder-slate-400 outline-none focus:ring-2 focus:ring-violet-300 focus:border-violet-400"
+                    value={formData.title}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, title: e.target.value }))}
+                  />
+                </label>
 
-              <label className="block text-xs font-semibold text-slate-600">
-                Start/Event Date
-                <input
-                  required
-                  type="date"
-                  disabled={createMut.isPending}
-                  className="mt-1 w-full rounded-lg border border-violet-200 px-3 py-2 text-sm text-slate-950 outline-none focus:ring-2 focus:ring-violet-300 focus:border-violet-400"
-                  value={formData.startDate}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, startDate: e.target.value }))}
-                />
-              </label>
+                <div className="block text-xs font-semibold text-slate-600 space-y-1.5">
+                  Post Type
+                  <Select
+                    value={formData.type}
+                    onValueChange={(val) => setFormData((prev) => ({ ...prev, type: val as AnnouncementType }))}
+                    disabled={isSaving}
+                  >
+                    <SelectTrigger className="w-full rounded-lg border border-violet-200 bg-white h-[38px] text-sm">
+                      <SelectValue placeholder="Select type..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="ANNOUNCEMENT">Bulletin Announcement</SelectItem>
+                      <SelectItem value="EVENT">Calendar Event</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
-              <label className="block text-xs font-semibold text-slate-600">
-                Description / Body
-                <textarea
-                  required
-                  rows={4}
-                  placeholder="Describe the bulletin event details here..."
-                  disabled={createMut.isPending}
-                  className="mt-1 w-full rounded-lg border border-violet-200 px-3 py-2 text-sm text-slate-950 placeholder-slate-400 outline-none focus:ring-2 focus:ring-violet-300 focus:border-violet-400 resize-none"
-                  value={formData.description}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
-                />
-              </label>
+                <label className="block text-xs font-semibold text-slate-600">
+                  Start/Event Date
+                  <input
+                    required
+                    type="date"
+                    disabled={isSaving}
+                    className="mt-1 w-full rounded-lg border border-violet-200 px-3 py-2 text-sm text-slate-950 outline-none focus:ring-2 focus:ring-violet-300 focus:border-violet-400"
+                    value={formData.startDate}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, startDate: e.target.value }))}
+                  />
+                </label>
 
-              <div className="flex justify-end gap-3 pt-2">
-                <button
-                  type="button"
-                  onClick={closeModal}
-                  disabled={createMut.isPending}
-                  className="rounded-xl border border-violet-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-violet-50 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={createMut.isPending}
-                  className="rounded-xl bg-violet-600 px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-violet-700 disabled:opacity-60 transition-all active:scale-[0.98]"
-                >
-                  {createMut.isPending ? "Posting..." : "Publish Post"}
-                </button>
-              </div>
-            </form>
+                <label className="block text-xs font-semibold text-slate-600">
+                  Description / Body
+                  <textarea
+                    required
+                    rows={4}
+                    placeholder="Describe the bulletin event details here..."
+                    disabled={isSaving}
+                    className="mt-1 w-full rounded-lg border border-violet-200 px-3 py-2 text-sm text-slate-950 placeholder-slate-400 outline-none focus:ring-2 focus:ring-violet-300 focus:border-violet-400 resize-none"
+                    value={formData.description}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
+                  />
+                </label>
+
+                <div className="flex justify-end gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={closeModal}
+                    disabled={isSaving}
+                    className="rounded-xl border border-violet-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-violet-50 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isSaving}
+                    className="rounded-xl bg-violet-600 px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-violet-700 disabled:opacity-60 transition-all active:scale-[0.98]"
+                  >
+                    {isSaving
+                      ? isEditMode
+                        ? "Saving…"
+                        : "Posting..."
+                      : isEditMode
+                        ? "Save Changes"
+                        : "Publish Post"}
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      ) : null}
+
+      {/* Delete Confirmation */}
+      {deleteId != null ? (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm"
+          role="presentation"
+          onClick={closeDelete}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="delete-announcement-title"
+            className="w-full max-w-md rounded-2xl border border-rose-100 bg-white p-6 shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 id="delete-announcement-title" className="font-montserrat text-lg font-semibold text-slate-900">
+              Delete announcement?
+            </h3>
+            <p className="mt-2 text-sm text-slate-600">
+              Are you sure you want to delete{" "}
+              <span className="font-semibold text-slate-800">{deleteTitle}</span>? This cannot be undone.
+            </p>
+            <div className="mt-5 flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={closeDelete}
+                disabled={deleteMut.isPending}
+                className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={confirmDelete}
+                disabled={deleteMut.isPending}
+                className="rounded-xl bg-rose-600 px-4 py-2 text-sm font-semibold text-white hover:bg-rose-700 disabled:opacity-60"
+              >
+                {deleteMut.isPending ? "Deleting…" : "Delete"}
+              </button>
+            </div>
           </div>
         </div>
       ) : null}

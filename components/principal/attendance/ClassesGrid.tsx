@@ -63,7 +63,7 @@ function ClassCard({ classItem, date }: { classItem: ClassItem; date: string }) 
         </div>
         <div>
           <h4 className="font-semibold text-slate-900 text-lg">{classItem.name}</h4>
-          <p className="text-xs text-slate-500">{sections.length} Sections</p>
+          <p className="text-xs text-slate-500">{classItem.totalStudents} Students</p>
         </div>
       </div>
 

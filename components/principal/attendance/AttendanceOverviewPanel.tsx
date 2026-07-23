@@ -63,7 +63,7 @@ export default function AttendanceOverviewPanel({ date }: { date: string }) {
         <ClassesGrid date={date} />
       </section>
       
-      <div className="rounded-2xl border border-violet-100 bg-white shadow-sm overflow-hidden">
+      {/* <div className="rounded-2xl border border-violet-100 bg-white shadow-sm overflow-hidden">
         <div className="border-b border-violet-100 bg-slate-50/50 px-6 py-4 flex items-center justify-between">
           <div>
             <h3 className="font-montserrat text-lg font-semibold text-slate-900">
@@ -126,7 +126,7 @@ export default function AttendanceOverviewPanel({ date }: { date: string }) {
             </tbody>
           </table>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }

@@ -1,4 +1,12 @@
-import { createAnnouncement, listAnnouncements, type AnnouncementWriteBody, type AnnouncementType } from "@/lib/api/announcements";
+import {
+  createAnnouncement,
+  deleteAnnouncement,
+  getAnnouncement,
+  listAnnouncements,
+  updateAnnouncement,
+  type AnnouncementWriteBody,
+  type AnnouncementType,
+} from "@/lib/api/announcements";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import { toast } from "sonner";
@@ -6,6 +14,7 @@ import { toast } from "sonner";
 export const announcementKeys = {
   all: ["announcements"] as const,
   byType: (type?: AnnouncementType) => ["announcements", "type", type] as const,
+  detail: (id: number) => ["announcements", "detail", id] as const,
 };
 
 function messageFromAxios(err: unknown): string {
@@ -26,6 +35,14 @@ export function useAnnouncements(type?: AnnouncementType) {
   });
 }
 
+export function useAnnouncement(id: number | null) {
+  return useQuery({
+    queryKey: announcementKeys.detail(id ?? 0),
+    queryFn: () => getAnnouncement(id!),
+    enabled: id != null,
+  });
+}
+
 export function useCreateAnnouncement() {
   const qc = useQueryClient();
   return useMutation({
@@ -33,6 +50,32 @@ export function useCreateAnnouncement() {
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: announcementKeys.all });
       toast.success("Event/Announcement created successfully");
+    },
+    onError: (e) => toast.error(messageFromAxios(e)),
+  });
+}
+
+export function useUpdateAnnouncement() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, body }: { id: number; body: AnnouncementWriteBody }) =>
+      updateAnnouncement(id, body),
+    onSuccess: (_data, vars) => {
+      void qc.invalidateQueries({ queryKey: announcementKeys.all });
+      void qc.invalidateQueries({ queryKey: announcementKeys.detail(vars.id) });
+      toast.success("Announcement updated successfully");
+    },
+    onError: (e) => toast.error(messageFromAxios(e)),
+  });
+}
+
+export function useDeleteAnnouncement() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => deleteAnnouncement(id),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: announcementKeys.all });
+      toast.success("Announcement deleted successfully");
     },
     onError: (e) => toast.error(messageFromAxios(e)),
   });
