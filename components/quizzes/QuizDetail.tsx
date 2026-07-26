@@ -39,7 +39,7 @@ export function QuizDetail({ quizId }: QuizDetailProps) {
             {quiz.title || "Quiz"}
           </h2>
           <p className="mt-2 text-slate-600">
-            {quiz.subject || "—"} · Class {quiz.className || "—"} ·{" "}
+            {quiz.topic || "—"} · Class {quiz.classId || "—"} ·{" "}
             {questionCount(quiz) || questions.length} question
             {(questionCount(quiz) || questions.length) === 1 ? "" : "s"}
           </p>
@@ -77,7 +77,7 @@ function QuestionCard({
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-2">
-        {(question.options ?? []).map((opt, i) => {
+        {Object.values(question).map((opt, i) => {
           const isCorrect = opt === question.correctAnswer;
           return (
             <div
