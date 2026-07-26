@@ -5,6 +5,7 @@ import { emptyQuizForm } from "@/lib/api/quizzes";
 import { useCreateQuiz } from "@/hooks/useQuizzes";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { getQuizId } from "@/lib/api/quizzes";
 
 export default function AddQuizPage() {
   const router = useRouter();
@@ -13,14 +14,16 @@ export default function AddQuizPage() {
 
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const questions = form.questions.map((q) => ({
-      ...q,
-      options: q.options.map((o) => o.trim()).filter(Boolean),
-    }));
-    createMut.mutate(
-      { ...form, questions },
-      { onSuccess: () => router.push("/assignments") },
-    );
+    createMut.mutate(form, {
+      onSuccess: (data) => {
+        const id = getQuizId(data);
+        if (id) {
+          router.push(`/assignments/${id}/edit`);
+        } else {
+          router.push("/assignments");
+        }
+      },
+    });
   }
 
   return (
@@ -28,10 +31,10 @@ export default function AddQuizPage() {
       <div>
         <p className="mb-2 text-sm font-medium text-sky-600">Assignments</p>
         <h2 className="font-montserrat text-3xl font-semibold text-slate-900">
-          Create quiz
+          Create quiz draft
         </h2>
         <p className="mt-2 text-slate-600">
-          Add questions and mark the correct answer for each.
+          First, create the quiz details. You will add questions on the next screen.
         </p>
       </div>
       <QuizForm
@@ -39,7 +42,7 @@ export default function AddQuizPage() {
         onChange={setForm}
         onSubmit={onSubmit}
         busy={createMut.isPending}
-        submitLabel="Create quiz"
+        submitLabel="Next: Add Questions"
       />
     </div>
   );

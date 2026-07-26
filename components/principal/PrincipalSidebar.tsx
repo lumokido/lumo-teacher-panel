@@ -17,7 +17,8 @@ import {
   ClipboardList,
   BookOpen,
   Award,
-  Images
+  Images,
+  HelpCircle,
 } from "lucide-react";
 
 const navItems = [
@@ -29,6 +30,7 @@ const navItems = [
   { label: "Report Card", href: "/principal/reportcard", icon: Award },
 
   { label: "Homework", href: "/principal/homework", icon: BookOpen },
+  { label: "Quizzes", href: "/principal/quizzes", icon: HelpCircle },
 
   { label: "Teachers", href: "/principal/teachers", icon: Users },
   { label: "Timetable", href: "/principal/timetable", icon: Clock },

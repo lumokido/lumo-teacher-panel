@@ -3,26 +3,25 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { clearAuthSession } from "@/lib/auth/session.client";
-
 import {
   LayoutDashboard,
   School,
   Users,
   FileText,
-  Settings,
   Clock,
   LogOut,
   Award,
-  Images,
-  MessageSquare
+  MessageSquare,
+  HelpCircle,
 } from "lucide-react";
+import { clearAuthSession } from "@/lib/auth/session.client";
 
 const navItems = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { label: "Classes", href: "/classes", icon: School },
   { label: "Students", href: "/students", icon: Users },
   { label: "Assignments", href: "/assignments", icon: FileText },
+  { label: "Quizzes", href: "/quizzes", icon: HelpCircle },
   { label: "Report Card", href: "/reportcard", icon: Award },
   { label: "Timetable", href: "/timetable", icon: Clock },
   { label: "Communication Hub", href: "/messages", icon: MessageSquare },

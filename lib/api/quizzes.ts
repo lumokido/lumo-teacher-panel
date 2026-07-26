@@ -2,24 +2,36 @@ import { api } from "@/lib/api/httpClient";
 
 export type QuizQuestion = {
   questionText: string;
-  options: string[];
-  correctAnswer: string;
+  optionA: string;
+  optionB: string;
+  optionC: string;
+  optionD: string;
+  correctAnswer: string; // "A", "B", "C", or "D"
 };
 
 export type QuizWriteBody = {
   title: string;
-  subject: string;
-  className: string;
-  questions: QuizQuestion[];
+  topic: string;
+  description: string;
+  classId: number;
 };
 
 export type QuizRow = {
   id?: number | string;
   quizId?: number | string;
   title?: string;
-  subject?: string;
-  className?: string;
+  topic?: string;
+  description?: string;
+  classId?: number;
+  status?: "DRAFT" | "PENDING" | "ACTIVE" | "COMPLETED" | string;
   questions?: QuizQuestion[];
+};
+
+export type QuizResult = {
+  studentId: string;
+  studentName: string;
+  score: number;
+  totalQuestions: number;
 };
 
 export function getQuizId(row: QuizRow): string | null {
@@ -35,17 +47,20 @@ export function questionCount(row: QuizRow): number {
 export function emptyQuestion(): QuizQuestion {
   return {
     questionText: "",
-    options: ["", "", "", ""],
-    correctAnswer: "",
+    optionA: "",
+    optionB: "",
+    optionC: "",
+    optionD: "",
+    correctAnswer: "A",
   };
 }
 
 export function emptyQuizForm(): QuizWriteBody {
   return {
     title: "",
-    subject: "",
-    className: "",
-    questions: [emptyQuestion(), emptyQuestion()],
+    topic: "",
+    description: "",
+    classId: 0,
   };
 }
 
@@ -82,7 +97,44 @@ export async function getQuiz(quizId: string): Promise<QuizRow> {
   return quiz;
 }
 
-export async function createQuiz(body: QuizWriteBody): Promise<unknown> {
+export async function createQuiz(body: QuizWriteBody): Promise<QuizRow> {
   const res = await api.post("/api/quizzes", body);
+  const quiz = unwrapQuiz(res.data);
+  if (!quiz) return res.data as QuizRow;
+  return quiz;
+}
+
+export async function updateQuizDraft(quizId: number | string, body: QuizWriteBody): Promise<QuizRow> {
+  const res = await api.put(`/api/quizzes/${quizId}`, body);
   return res.data;
+}
+
+export async function deleteQuiz(quizId: number | string): Promise<void> {
+  await api.delete(`/api/quizzes/${quizId}`);
+}
+
+export async function generateQuestions(topic: string, count: number): Promise<QuizQuestion[]> {
+  const res = await api.post("/api/quizzes/generate-questions", { topic, count });
+  return Array.isArray(res.data) ? res.data : (res.data.questions || []);
+}
+
+export async function saveQuizQuestions(quizId: number | string, questions: QuizQuestion[]): Promise<void> {
+  await api.post(`/api/quizzes/${quizId}/questions`, questions);
+}
+
+export async function getQuizResults(quizId: string): Promise<QuizResult[]> {
+  const res = await api.get(`/api/quizzes/${quizId}/results`);
+  return Array.isArray(res.data) ? res.data : (res.data.results || []);
+}
+
+export async function requestActivation(quizId: number | string): Promise<void> {
+  await api.put(`/api/quizzes/${quizId}/request-activation`);
+}
+
+export async function startQuiz(quizId: number | string): Promise<void> {
+  await api.put(`/api/quizzes/${quizId}/start`);
+}
+
+export async function completeQuiz(quizId: number | string): Promise<void> {
+  await api.put(`/api/quizzes/${quizId}/complete`);
 }
