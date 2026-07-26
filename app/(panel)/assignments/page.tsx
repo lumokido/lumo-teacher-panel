@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
-import QuizzesList from "@/components/quizzes/QuizzesList";
 import { useClassesList, useSectionsByClassId, useMyAssignedClasses } from "@/hooks/useAdminClasses";
 import { useAssignmentsByDateAndClass } from "@/hooks/useAssignments";
 import Link from "next/link";
@@ -9,41 +8,7 @@ import { format } from "date-fns";
 import { School, Calendar, FileText, Plus, Loader2, Eye } from "lucide-react";
 
 export default function AssignmentsPage() {
-  const [activeTab, setActiveTab] = useState<"quizzes" | "homework">("quizzes");
-
-  return (
-    <div className="space-y-8">
-      {/* Tab Switcher */}
-      <div className="flex border-b border-slate-100">
-        <button
-          onClick={() => setActiveTab("quizzes")}
-          className={`px-6 py-3.5 text-sm font-semibold border-b-2 transition-all cursor-pointer ${
-            activeTab === "quizzes"
-              ? "border-sky-600 text-sky-600"
-              : "border-transparent text-slate-500 hover:text-slate-800"
-          }`}
-        >
-          Quizzes Center
-        </button>
-        <button
-          onClick={() => setActiveTab("homework")}
-          className={`px-6 py-3.5 text-sm font-semibold border-b-2 transition-all cursor-pointer ${
-            activeTab === "homework"
-              ? "border-sky-600 text-sky-600"
-              : "border-transparent text-slate-500 hover:text-slate-800"
-          }`}
-        >
-          Daily Homework logs
-        </button>
-      </div>
-
-      {activeTab === "quizzes" ? (
-        <QuizzesList />
-      ) : (
-        <HomeworkCenter />
-      )}
-    </div>
-  );
+  return <HomeworkCenter />;
 }
 
 function HomeworkCenter() {
