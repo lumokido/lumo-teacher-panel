@@ -2,7 +2,9 @@ import {
   addStudent,
   listStudents,
   updateStudent,
+  deleteStudent,
   getStudentDetails,
+  getUpcomingBirthdays,
   type StudentWriteBody,
 } from "@/lib/api/students";
 import { useMutation, useQuery, useQueryClient, keepPreviousData } from "@tanstack/react-query";
@@ -62,10 +64,29 @@ export function useUpdateStudent(studentId: string) {
   });
 }
 
+export function useDeleteStudent() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (studentId: string) => deleteStudent(studentId),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: studentsKey });
+      toast.success("Student deleted");
+    },
+    onError: (e) => toast.error(messageFromAxios(e)),
+  });
+}
+
 export function useStudentDetails(studentId: string) {
   return useQuery({
     queryKey: [...studentsKey, studentId],
     queryFn: () => getStudentDetails(studentId),
     enabled: !!studentId,
+  });
+}
+
+export function useUpcomingBirthdays(days: number = 30) {
+  return useQuery({
+    queryKey: [...studentsKey, "upcoming-birthdays", days],
+    queryFn: () => getUpcomingBirthdays(days),
   });
 }

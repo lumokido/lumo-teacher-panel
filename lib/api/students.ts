@@ -145,6 +145,11 @@ export async function updateStudent(
   return res.data;
 }
 
+export async function deleteStudent(studentId: string): Promise<unknown> {
+  const res = await api.delete(`/api/students/${encodeURIComponent(studentId)}`);
+  return res.data;
+}
+
 export type StudentDetailResponse = {
   id?: number | string;
   studentId?: number | string;
@@ -172,6 +177,22 @@ export type StudentDetailResponse = {
 export async function getStudentDetails(id: string): Promise<StudentDetailResponse> {
   const res = await api.get(`/api/students/${id}`);
   return res.data;
+}
+
+export type UpcomingBirthdayStudent = {
+  id: number | string;
+  studentId: string;
+  firstName: string;
+  lastName: string;
+  dateOfBirth: string;
+  className: string;
+  profilePhotoUrl?: string | null;
+  daysUntilBirthday: number;
+};
+
+export async function getUpcomingBirthdays(days: number = 30): Promise<UpcomingBirthdayStudent[]> {
+  const res = await api.get("/api/students/upcoming-birthdays", { params: { days } });
+  return Array.isArray(res.data) ? res.data : (res.data.students || []);
 }
 
 export async function uploadStudentPhoto(

@@ -4,6 +4,7 @@ import { useClassesList } from "@/hooks/useAdminClasses";
 import { useTeachersList } from "@/hooks/useAdminTeachers";
 import { useAttendanceStats } from "@/hooks/useAttendance";
 import { useAnnouncements } from "@/hooks/useAnnouncements";
+import { UpcomingBirthdaysWidget } from "@/components/students/UpcomingBirthdaysWidget";
 import { format } from "date-fns";
 import Link from "next/link";
 import { 
@@ -107,6 +108,9 @@ export default function PrincipalDashboardPage() {
           </div>
         </div>
       </div>
+
+      {/* Upcoming Student Birthdays (Next 7 Days) */}
+      <UpcomingBirthdaysWidget theme="violet" />
 
       {/* Main Grid: Notices Feed & Quick Shortcuts */}
       <div className="grid gap-8 lg:grid-cols-3">
