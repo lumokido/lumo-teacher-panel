@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { pickPostLoginPath, useAuthLogin } from "@/hooks/useAuthLogin";
+import InstallAppButton from "@/components/pwa/InstallAppButton";
 
 type RoleTab = "principal" | "teacher";
 
@@ -225,6 +226,19 @@ export default function LoginScreen() {
               >
                 {loading ? "Signing in…" : "Sign in"}
               </button>
+
+              <div className="relative py-1">
+                <div className="absolute inset-0 flex items-center" aria-hidden>
+                  <div className="w-full border-t border-slate-200" />
+                </div>
+                <div className="relative flex justify-center text-[11px] uppercase tracking-wider">
+                  <span className="bg-white px-3 text-slate-400">
+                    or
+                  </span>
+                </div>
+              </div>
+
+              <InstallAppButton />
             </div>
           </form>
 

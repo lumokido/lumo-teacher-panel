@@ -120,14 +120,34 @@ export default function StudentDetailPanel({ studentId }: { studentId: string })
             Back
           </button>
 
-          <button
-            onClick={() => router.push(isPrincipal ? `/principal/students/${studentId}/edit` : `/students/${studentId}/edit`)}
-            className={`rounded-xl px-4 py-2 text-sm font-semibold text-white shadow-sm transition active:scale-[0.98] ${
-              isPrincipal ? "bg-violet-600 hover:bg-violet-700" : "bg-sky-500 hover:bg-sky-600"
-            }`}
-          >
-            Edit Student
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() =>
+                router.push(
+                  isPrincipal
+                    ? `/principal/students/${studentId}/delete`
+                    : `/students/${studentId}/delete`,
+                )
+              }
+              className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-2 text-sm font-semibold text-rose-700 shadow-sm transition hover:bg-rose-100 active:scale-[0.98]"
+            >
+              Delete
+            </button>
+            <button
+              onClick={() =>
+                router.push(
+                  isPrincipal
+                    ? `/principal/students/${studentId}/edit`
+                    : `/students/${studentId}/edit`,
+                )
+              }
+              className={`rounded-xl px-4 py-2 text-sm font-semibold text-white shadow-sm transition active:scale-[0.98] ${
+                isPrincipal ? "bg-violet-600 hover:bg-violet-700" : "bg-sky-500 hover:bg-sky-600"
+              }`}
+            >
+              Edit Student
+            </button>
+          </div>
         </div>
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div className="flex flex-col sm:flex-row sm:items-center gap-5">

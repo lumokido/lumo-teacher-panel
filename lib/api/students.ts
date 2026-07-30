@@ -145,6 +145,11 @@ export async function updateStudent(
   return res.data;
 }
 
+export async function deleteStudent(studentId: string): Promise<unknown> {
+  const res = await api.delete(`/api/students/${encodeURIComponent(studentId)}`);
+  return res.data;
+}
+
 export type StudentDetailResponse = {
   id?: number | string;
   studentId?: number | string;

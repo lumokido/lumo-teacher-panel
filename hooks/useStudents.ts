@@ -2,6 +2,7 @@ import {
   addStudent,
   listStudents,
   updateStudent,
+  deleteStudent,
   getStudentDetails,
   getUpcomingBirthdays,
   type StudentWriteBody,
@@ -58,6 +59,18 @@ export function useUpdateStudent(studentId: string) {
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: studentsKey });
       toast.success("Student updated");
+    },
+    onError: (e) => toast.error(messageFromAxios(e)),
+  });
+}
+
+export function useDeleteStudent() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (studentId: string) => deleteStudent(studentId),
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: studentsKey });
+      toast.success("Student deleted");
     },
     onError: (e) => toast.error(messageFromAxios(e)),
   });
