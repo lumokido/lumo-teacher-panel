@@ -33,8 +33,8 @@ export function useMarkClassAttendance() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (payload: MarkAttendancePayload) => markClassAttendance(payload),
-    onSuccess: () => {
-      void qc.invalidateQueries({ queryKey: attendanceKeys.all });
+    onSuccess: async () => {
+      await qc.invalidateQueries({ queryKey: attendanceKeys.all });
       toast.success("Attendance marked successfully");
     },
     onError: (e) => toast.error(messageFromAxios(e)),

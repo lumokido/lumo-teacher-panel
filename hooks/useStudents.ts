@@ -3,6 +3,7 @@ import {
   listStudents,
   updateStudent,
   getStudentDetails,
+  getUpcomingBirthdays,
   type StudentWriteBody,
 } from "@/lib/api/students";
 import { useMutation, useQuery, useQueryClient, keepPreviousData } from "@tanstack/react-query";
@@ -67,5 +68,12 @@ export function useStudentDetails(studentId: string) {
     queryKey: [...studentsKey, studentId],
     queryFn: () => getStudentDetails(studentId),
     enabled: !!studentId,
+  });
+}
+
+export function useUpcomingBirthdays(days: number = 30) {
+  return useQuery({
+    queryKey: [...studentsKey, "upcoming-birthdays", days],
+    queryFn: () => getUpcomingBirthdays(days),
   });
 }

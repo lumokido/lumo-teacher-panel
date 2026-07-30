@@ -41,7 +41,10 @@ export default function PrincipalLayout({
           <span className="text-sm font-medium text-slate-500">
             Alphores administration
           </span>
-          <div className="ml-auto flex items-center gap-4">
+          <div className="ml-auto flex items-center gap-3 sm:gap-4">
+            <span className="hidden sm:inline-flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600 border border-slate-200">
+              Built by Lumo
+            </span>
             <span className="hidden sm:inline-block rounded-full border border-violet-200 bg-violet-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-violet-800">
               Director Panel
             </span>
@@ -91,8 +94,14 @@ export default function PrincipalLayout({
         </div>
 
         {/* Main Content Area */}
-        <main className="flex-1 min-w-0 rounded-2xl border border-violet-100 bg-white/90 p-4 md:p-8 shadow-sm backdrop-blur transition-all duration-300">
-          {children}
+        <main className="flex-1 min-w-0 rounded-2xl border border-violet-100 bg-white/90 p-4 md:p-8 shadow-sm backdrop-blur transition-all duration-300 flex flex-col justify-between">
+          <div className="flex-1">{children}</div>
+          <footer className="mt-8 pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-400 font-medium">
+            <span>Alphores Educational Institutions © 2026</span>
+            <span className="font-semibold text-violet-700 bg-violet-50 px-2.5 py-0.5 rounded-full border border-violet-100">
+              Built by Lumo
+            </span>
+          </footer>
         </main>
       </div>
     </div>

@@ -5,6 +5,7 @@ import { useMyHomeroomStats } from "@/hooks/useAttendance";
 import { useMyAssignedClasses, useClassesList } from "@/hooks/useAdminClasses";
 import { useAllExams } from "@/hooks/useExams";
 import { getTimetableByClass } from "@/lib/api/timetable";
+import { UpcomingBirthdaysWidget } from "@/components/students/UpcomingBirthdaysWidget";
 import { useQueries } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { useState } from "react";
@@ -186,6 +187,9 @@ export default function DashboardPage() {
       )}
 
 
+      {/* Upcoming Student Birthdays (Next 7 Days) */}
+      <UpcomingBirthdaysWidget theme="sky" />
+
       {/* Grid Layout */}
       <div className="grid gap-8 lg:grid-cols-3">
         {/* Left/Main Column: Tabbed Notice Board */}
@@ -346,7 +350,7 @@ export default function DashboardPage() {
           )}
         </div>
 
-        {/* Right Column: Events & Calendar */}
+        {/* Right Column: Upcoming Events */}
         <div className="space-y-6">
           <div className="border-b border-slate-100 pb-3">
             <h3 className="font-montserrat text-xl font-bold text-slate-800 flex items-center gap-2">
@@ -393,7 +397,7 @@ export default function DashboardPage() {
           )}
         </div>
       </div>
-
     </div>
+
   );
 }

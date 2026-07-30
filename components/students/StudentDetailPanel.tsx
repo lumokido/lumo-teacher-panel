@@ -1,7 +1,57 @@
 "use client";
 
+import { useState } from "react";
 import { useStudentDetails } from "@/hooks/useStudents";
 import { useRouter, usePathname } from "next/navigation";
+import { Eye, EyeOff } from "lucide-react";
+
+function maskAadhar(value?: string | null): string {
+  const digits = (value ?? "").replace(/\D/g, "");
+  if (!digits) return "—";
+  const masked = "X".repeat(digits.length);
+  return masked.replace(/(.{4})(?=.)/g, "$1 ");
+}
+
+function formatAadhar(value?: string | null): string {
+  const digits = (value ?? "").replace(/\D/g, "");
+  if (!digits) return "—";
+  return digits.replace(/(\d{4})(?=\d)/g, "$1 ");
+}
+
+function MaskedAadharField({
+  label,
+  value,
+  accentClass = "text-slate-500 hover:text-slate-700",
+}: {
+  label: string;
+  value?: string | null;
+  accentClass?: string;
+}) {
+  const [revealed, setRevealed] = useState(false);
+  const hasValue = !!(value ?? "").replace(/\D/g, "");
+
+  return (
+    <div>
+      <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">{label}</p>
+      <div className="mt-1 flex items-center gap-2">
+        <p className="text-sm font-medium text-slate-900 font-mono tracking-wide">
+          {revealed ? formatAadhar(value) : maskAadhar(value)}
+        </p>
+        {hasValue && (
+          <button
+            type="button"
+            onClick={() => setRevealed((v) => !v)}
+            className={`rounded-md p-1 transition ${accentClass}`}
+            aria-label={revealed ? `Hide ${label}` : `Reveal ${label}`}
+            title={revealed ? "Hide" : "Reveal"}
+          >
+            {revealed ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
 
 export default function StudentDetailPanel({ studentId }: { studentId: string }) {
   const router = useRouter();
@@ -137,9 +187,28 @@ export default function StudentDetailPanel({ studentId }: { studentId: string })
               <p className="mt-1 text-sm font-medium text-slate-900">{student.gender || "—"}</p>
             </div>
             <div>
-              <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">Parent/Guardian Name</p>
-              <p className="mt-1 text-sm font-medium text-slate-900">{student.parentName || "—"}</p>
+              <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">Father Name</p>
+              <p className="mt-1 text-sm font-medium text-slate-900">{student.fatherName || "—"}</p>
             </div>
+            <div>
+              <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">Mother Name</p>
+              <p className="mt-1 text-sm font-medium text-slate-900">{student.motherName || "—"}</p>
+            </div>
+            <MaskedAadharField
+              label="Father Aadhaar"
+              value={student.fatherAadharNumber}
+              accentClass={isPrincipal ? "text-violet-500 hover:text-violet-700" : "text-sky-500 hover:text-sky-700"}
+            />
+            <MaskedAadharField
+              label="Mother Aadhaar"
+              value={student.motherAadharNumber}
+              accentClass={isPrincipal ? "text-violet-500 hover:text-violet-700" : "text-sky-500 hover:text-sky-700"}
+            />
+            <MaskedAadharField
+              label="Student Aadhaar"
+              value={student.studentAadharNumber}
+              accentClass={isPrincipal ? "text-violet-500 hover:text-violet-700" : "text-sky-500 hover:text-sky-700"}
+            />
             <div>
               <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">Mobile Number</p>
               <p className="mt-1 text-sm font-medium text-slate-900">{student.mobileNumber || "—"}</p>

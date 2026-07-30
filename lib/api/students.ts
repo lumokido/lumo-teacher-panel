@@ -174,6 +174,22 @@ export async function getStudentDetails(id: string): Promise<StudentDetailRespon
   return res.data;
 }
 
+export type UpcomingBirthdayStudent = {
+  id: number | string;
+  studentId: string;
+  firstName: string;
+  lastName: string;
+  dateOfBirth: string;
+  className: string;
+  profilePhotoUrl?: string | null;
+  daysUntilBirthday: number;
+};
+
+export async function getUpcomingBirthdays(days: number = 30): Promise<UpcomingBirthdayStudent[]> {
+  const res = await api.get("/api/students/upcoming-birthdays", { params: { days } });
+  return Array.isArray(res.data) ? res.data : (res.data.students || []);
+}
+
 export async function uploadStudentPhoto(
   studentIdOrStudentIdentifier: string,
   file: File,

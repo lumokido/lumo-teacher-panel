@@ -4,10 +4,11 @@ import { useState, useMemo, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useClassesList, useSectionsByClassId, useStudentsByClassId, useStudentsByClassAndSectionId } from "@/hooks/useAdminClasses";
 import { useMarkClassAttendance, useAttendanceHistory } from "@/hooks/useAttendance";
+import { attendanceStatusFromHistory } from "@/lib/api/attendance";
 import { getStudentId, studentDisplayName } from "@/lib/api/students";
 import { format } from "date-fns";
 import Link from "next/link";
-import { ArrowLeft, Calendar, Search, Loader2, Users, CheckCircle2, AlertTriangle, XCircle, Check } from "lucide-react";
+import { ArrowLeft, Calendar, Search, Loader2, Users, CheckCircle2, XCircle, Check } from "lucide-react";
 import { toast } from "sonner";
 
 function AttendanceMarkingContent() {
@@ -38,42 +39,41 @@ function AttendanceMarkingContent() {
   const totalStudents = students.length;
 
   // Load attendance history for date
-  const { data: history = [], isLoading: isLoadingHistory, isFetching } = useAttendanceHistory(dateParam);
+  const {
+    data: history = [],
+    isLoading: isLoadingHistory,
+    isFetching,
+    dataUpdatedAt,
+  } = useAttendanceHistory(dateParam);
 
   const isLoading = classesLoading || sectionsLoading || (sectionId ? isLoadingSection : isLoadingAll) || isLoadingHistory;
 
   const markMut = useMarkClassAttendance();
 
   const [attendance, setAttendance] = useState<Record<string, "PRESENT" | "ABSENT">>({});
-  const [loadedKey, setLoadedKey] = useState<string>("");
+  const [loadedKey, setLoadedKey] = useState("");
+  const [syncedAt, setSyncedAt] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
 
   const currentKey = `${classId || 0}-${sectionId || 0}-${dateParam}`;
 
-  // Populate attendance from history once loaded
+  // Every day defaults to Present; restore Absents from saved history for that date.
   useEffect(() => {
-    if (!isLoading && !isFetching && currentKey !== loadedKey) {
-      const newAtt: Record<string, "PRESENT" | "ABSENT"> = {};
-      students.forEach((s) => {
-        const id = getStudentId(s);
-        if (id) {
-          const histItem = history.find((h) => String(h.studentId) === id);
-          if (histItem) {
-            const status = histItem.status?.toUpperCase();
-            if (status === "PRESENT" || status === "ABSENT") {
-              newAtt[id] = status;
-            }
-          }
-        }
-      });
-      setAttendance(newAtt);
-      setLoadedKey(currentKey);
-    }
-  }, [isLoading, isFetching, currentKey, loadedKey, history, students]);
+    if (isLoading || isFetching) return;
+    if (currentKey === loadedKey && dataUpdatedAt === syncedAt) return;
+
+    const newAtt: Record<string, "PRESENT" | "ABSENT"> = {};
+    students.forEach((s) => {
+      const id = getStudentId(s);
+      if (id) newAtt[id] = attendanceStatusFromHistory(history, s);
+    });
+    setAttendance(newAtt);
+    setLoadedKey(currentKey);
+    setSyncedAt(dataUpdatedAt);
+  }, [isLoading, isFetching, currentKey, loadedKey, syncedAt, dataUpdatedAt, history, students]);
 
   const absentCount = Object.values(attendance).filter((s) => s === "ABSENT").length;
   const presentCount = Object.values(attendance).filter((s) => s === "PRESENT").length;
-  const notSetCount = totalStudents - (absentCount + presentCount);
 
   function handleDateChange(newDate: string) {
     const params = new URLSearchParams(searchParams.toString());
@@ -95,18 +95,8 @@ function AttendanceMarkingContent() {
     toast.info("Marked all students as present locally");
   }
 
-  function clearAll() {
-    setAttendance({});
-  }
-
   function saveAttendance() {
     if (totalStudents === 0 || !classId) return;
-
-    if (notSetCount > 0) {
-      if (!confirm(`There are ${notSetCount} students unmarked. Unmarked students will be recorded as PRESENT by default. Save attendance?`)) {
-        return;
-      }
-    }
 
     const absentIds = Object.entries(attendance)
       .filter(([_, status]) => status === "ABSENT")
@@ -116,11 +106,7 @@ function AttendanceMarkingContent() {
       classId,
       sectionId: sectionId || undefined,
       date: dateParam,
-      absentStudentIds: absentIds
-    }, {
-      onSuccess: () => {
-        setLoadedKey(""); // Reset to force refetch
-      }
+      absentStudentIds: absentIds,
     });
   }
 
@@ -198,7 +184,7 @@ function AttendanceMarkingContent() {
       </div>
 
       {/* Overview Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         <div className="flex items-center gap-3.5 rounded-xl border border-slate-100 bg-slate-50/50 p-4">
           <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-sky-50 text-sky-600 shrink-0">
             <Users className="h-5 w-5" />
@@ -228,16 +214,6 @@ function AttendanceMarkingContent() {
             <p className="text-xl font-bold text-rose-800 leading-tight">{absentCount}</p>
           </div>
         </div>
-
-        <div className="flex items-center gap-3.5 rounded-xl border border-amber-100 bg-amber-50/20 p-4">
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-amber-100/50 text-amber-600 shrink-0">
-            <AlertTriangle className="h-5 w-5" />
-          </div>
-          <div>
-            <p className="text-[10px] font-bold text-amber-600/80 uppercase tracking-wider">Not Marked</p>
-            <p className="text-xl font-bold text-amber-800 leading-tight">{notSetCount}</p>
-          </div>
-        </div>
       </div>
 
       {/* Main Panel */}
@@ -263,13 +239,6 @@ function AttendanceMarkingContent() {
               className="rounded-xl bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-600 hover:bg-emerald-100 transition-all active:scale-[0.98] disabled:opacity-50"
             >
               Mark All Present
-            </button>
-            <button
-              onClick={clearAll}
-              disabled={totalStudents === 0 || markMut.isPending}
-              className="rounded-xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-all active:scale-[0.98] disabled:opacity-50"
-            >
-              Reset
             </button>
           </div>
         </div>
@@ -301,7 +270,7 @@ function AttendanceMarkingContent() {
               <tbody className="divide-y divide-slate-100 bg-white">
                 {filteredStudents.map((s, index) => {
                   const id = getStudentId(s) ?? `row-${index}`;
-                  const currentStatus = attendance[id];
+                  const currentStatus = attendance[id] ?? "PRESENT";
 
                   return (
                     <tr key={id} className="hover:bg-sky-50/20 transition-colors">
