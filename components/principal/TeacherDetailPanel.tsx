@@ -11,7 +11,12 @@ type Props = {
   emailId: string;
 };
 
-type TeacherFormState = Omit<AdminTeacherWriteBody, "success" | "classes" | "subjects"> & {
+type TeacherFormState = Omit<
+  AdminTeacherWriteBody,
+  "success" | "classes" | "subjects" | "passwordHash" | "dateOfBirth"
+> & {
+  passwordHash: string;
+  dateOfBirth: string;
   classes: string;
   subjects: string;
 };
@@ -32,6 +37,7 @@ export default function TeacherDetailPanel({ emailId }: Props) {
     name: "",
     mobileNumber: "",
     classTeacher: "",
+    dateOfBirth: "",
     classes: "",
     subjects: "",
   });
@@ -52,6 +58,8 @@ export default function TeacherDetailPanel({ emailId }: Props) {
         name: teacher.name ?? "",
         mobileNumber: teacher.mobileNumber ?? "",
         classTeacher: teacher.classTeacher ?? "",
+        // Native date inputs need YYYY-MM-DD, so strip any time portion
+        dateOfBirth: (teacher.dateOfBirth ?? "").slice(0, 10),
         classes: classesStr,
         subjects: subjectsStr,
       });
@@ -181,7 +189,16 @@ export default function TeacherDetailPanel({ emailId }: Props) {
                 />
               </label>
 
-
+              <label className="block text-sm font-medium text-slate-600">
+                Date of Birth
+                <input
+                  type="date"
+                  disabled={isLoading}
+                  className="mt-1.5 w-full rounded-xl border border-violet-200 px-4 py-2.5 text-sm text-slate-900 outline-none focus:ring-2 focus:ring-violet-300 disabled:bg-slate-50 disabled:text-slate-500"
+                  value={form.dateOfBirth}
+                  onChange={(e) => setForm((f) => ({ ...f, dateOfBirth: e.target.value }))}
+                />
+              </label>
 
               <label className="block text-sm font-medium text-slate-600">
                 Class Teacher (Homeroom)
