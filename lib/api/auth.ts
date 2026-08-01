@@ -19,6 +19,6 @@ export function postPrincipalLogin(credentials: { emailId: string; passwordHash:
  * Teacher login
  *   POST http://localhost:8080/api/admin/login-teacher
  */
-export function postTeacherLogin(credentials: { mobileNumber: string; dateOfBirth: string }) {
+export function postTeacherLogin(credentials: LoginCredentials) {
   return apiPostJson<unknown>("api/admin/login-teacher", credentials);
 }

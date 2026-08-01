@@ -66,7 +66,7 @@ export function useAuthLogin() {
       try {
         const result =
           tabRole === "principal"
-            ? await postPrincipalLogin(credentials)
+            ? await postPrincipalLogin({ emailId: credentials.emailId ?? "", passwordHash: credentials.passwordHash ?? "" })
             : await postTeacherLogin(credentials);
 
         if (!result.ok) {

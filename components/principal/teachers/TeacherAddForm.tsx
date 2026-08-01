@@ -11,8 +11,10 @@ import Link from "next/link";
 
 type TeacherAddFormState = Omit<
   AdminTeacherWriteBody,
-  "success" | "passwordHash" | "classes" | "subjects"
+  "success" | "passwordHash" | "classes" | "subjects" | "classTeacher" | "dateOfBirth"
 > & {
+  classTeacher: string;
+  dateOfBirth: string;
   classes: string;
   subjects: string;
 };
