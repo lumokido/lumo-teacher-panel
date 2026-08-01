@@ -11,7 +11,7 @@ import Link from "next/link";
 
 type TeacherAddFormState = Omit<
   AdminTeacherWriteBody,
-  "success" | "classes" | "subjects"
+  "success" | "passwordHash" | "classes" | "subjects"
 > & {
   classes: string;
   subjects: string;
@@ -20,10 +20,10 @@ type TeacherAddFormState = Omit<
 function emptyForm(): TeacherAddFormState {
   return {
     emailId: "",
-    passwordHash: "",
     name: "",
     mobileNumber: "",
     classTeacher: "",
+    dateOfBirth: "",
     classes: "",
     subjects: "",
   };
@@ -102,16 +102,14 @@ export default function TeacherAddForm() {
           </label>
 
           <label className="block text-sm font-medium text-slate-700">
-            Temporary Password
+            Date of Birth
             <input
               required
-              type="password"
-              autoComplete="new-password"
+              type="date"
               disabled={busy}
-              placeholder="Enter a secure password"
               className="mt-1.5 w-full rounded-xl border border-violet-200 px-4 py-2.5 text-sm text-slate-900 outline-none focus:ring-2 focus:ring-violet-300 disabled:bg-slate-50 transition-all"
-              value={form.passwordHash}
-              onChange={(e) => setForm((f) => ({ ...f, passwordHash: e.target.value }))}
+              value={form.dateOfBirth || ""}
+              onChange={(e) => setForm((f) => ({ ...f, dateOfBirth: e.target.value }))}
             />
           </label>
         </div>

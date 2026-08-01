@@ -1,12 +1,13 @@
 import { api } from "@/lib/api/httpClient";
 
 export type AdminTeacherWriteBody = {
-  success: boolean;
+  success?: boolean;
   emailId: string;
-  passwordHash: string;
+  passwordHash?: string;
   name: string;
   mobileNumber: string;
-  classTeacher: string;
+  classTeacher?: string;
+  dateOfBirth?: string;
   classes: string | string[];
   subjects: string | string[];
 };
@@ -18,6 +19,7 @@ export type TeacherRow = {
   schoolName?: string;
   mobileNumber?: string;
   classTeacher?: string;
+  dateOfBirth?: string;
   classes?: string | string[];
   subjects?: string | string[];
 };

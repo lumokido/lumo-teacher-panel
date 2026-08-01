@@ -15,13 +15,20 @@ export default function LoginScreen() {
   const [emailId, setEmailId] = useState("");
   const [password, setPassword] = useState("");
 
+  // Teacher Login Fields
+  const [mobileNumber, setMobileNumber] = useState("");
+  const [dateOfBirth, setDateOfBirth] = useState("");
+
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-    const result = await login(tab, {
-      emailId: emailId.trim(),
-      passwordHash: password,
-    });
+
+    const credentials =
+      tab === "principal"
+        ? { emailId: emailId.trim(), passwordHash: password }
+        : { mobileNumber: mobileNumber.trim(), dateOfBirth };
+
+    const result = await login(tab, credentials);
     if (!result.ok) return;
 
     const from = searchParams.get("from");
@@ -141,8 +148,8 @@ export default function LoginScreen() {
               }}
               className={
                 tab === "principal"
-                  ? "rounded-xl bg-white py-2.5 text-sm font-semibold text-slate-900 shadow-sm ring-1 ring-slate-200/80"
-                  : "rounded-xl py-2.5 text-sm font-medium text-slate-500 transition hover:text-slate-800"
+                  ? "rounded-xl bg-white py-2.5 text-sm font-semibold text-slate-900 shadow-sm ring-1 ring-slate-200/80 cursor-pointer"
+                  : "rounded-xl py-2.5 text-sm font-medium text-slate-500 transition hover:text-slate-800 cursor-pointer"
               }
             >
               Principal
@@ -155,8 +162,8 @@ export default function LoginScreen() {
               }}
               className={
                 tab === "teacher"
-                  ? "rounded-xl bg-white py-2.5 text-sm font-semibold text-slate-900 shadow-sm ring-1 ring-slate-200/80"
-                  : "rounded-xl py-2.5 text-sm font-medium text-slate-500 transition hover:text-slate-800"
+                  ? "rounded-xl bg-white py-2.5 text-sm font-semibold text-slate-900 shadow-sm ring-1 ring-slate-200/80 cursor-pointer"
+                  : "rounded-xl py-2.5 text-sm font-medium text-slate-500 transition hover:text-slate-800 cursor-pointer"
               }
             >
               Teacher
@@ -168,47 +175,85 @@ export default function LoginScreen() {
             className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm shadow-slate-200/50"
           >
             <div className="space-y-4">
-              <div>
-                <label
-                  htmlFor="emailId"
-                  className="mb-1.5 block text-sm font-medium text-slate-700"
-                >
-                  Email
-                </label>
-                <input
-                  id="emailId"
-                  name="emailId"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  value={emailId}
-                  onChange={(e) => setEmailId(e.target.value)}
-                  placeholder={
-                    tab === "principal"
-                      ? "principal@school.com"
-                      : "teacher@school.com"
-                  }
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-slate-400 focus:bg-white focus:ring-2 focus:ring-slate-200"
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="password"
-                  className="mb-1.5 block text-sm font-medium text-slate-700"
-                >
-                  Password
-                </label>
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="current-password"
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-slate-900 outline-none transition focus:border-slate-400 focus:bg-white focus:ring-2 focus:ring-slate-200"
-                />
-              </div>
+              {tab === "principal" ? (
+                <>
+                  <div>
+                    <label
+                      htmlFor="emailId"
+                      className="mb-1.5 block text-sm font-medium text-slate-700"
+                    >
+                      Email Address
+                    </label>
+                    <input
+                      id="emailId"
+                      name="emailId"
+                      type="email"
+                      autoComplete="email"
+                      required
+                      value={emailId}
+                      onChange={(e) => setEmailId(e.target.value)}
+                      placeholder="principal@school.com"
+                      className="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-slate-400 focus:bg-white focus:ring-2 focus:ring-slate-200"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="password"
+                      className="mb-1.5 block text-sm font-medium text-slate-700"
+                    >
+                      Password
+                    </label>
+                    <input
+                      id="password"
+                      name="password"
+                      type="password"
+                      autoComplete="current-password"
+                      required
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-slate-900 outline-none transition focus:border-slate-400 focus:bg-white focus:ring-2 focus:ring-slate-200"
+                    />
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div>
+                    <label
+                      htmlFor="mobileNumber"
+                      className="mb-1.5 block text-sm font-medium text-slate-700"
+                    >
+                      Mobile Number
+                    </label>
+                    <input
+                      id="mobileNumber"
+                      name="mobileNumber"
+                      type="tel"
+                      required
+                      value={mobileNumber}
+                      onChange={(e) => setMobileNumber(e.target.value)}
+                      placeholder="9876543210"
+                      className="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-slate-400 focus:bg-white focus:ring-2 focus:ring-slate-200"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="dateOfBirth"
+                      className="mb-1.5 block text-sm font-medium text-slate-700"
+                    >
+                      Date of Birth
+                    </label>
+                    <input
+                      id="dateOfBirth"
+                      name="dateOfBirth"
+                      type="date"
+                      required
+                      value={dateOfBirth}
+                      onChange={(e) => setDateOfBirth(e.target.value)}
+                      className="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-3 text-slate-900 outline-none transition focus:border-slate-400 focus:bg-white focus:ring-2 focus:ring-slate-200"
+                    />
+                  </div>
+                </>
+              )}
 
               {error ? (
                 <p
