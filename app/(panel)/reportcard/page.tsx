@@ -22,6 +22,8 @@ import {
   CheckCircle2
 } from "lucide-react";
 
+import { sortClasses } from "@/lib/utils/sortClasses";
+
 export default function TeacherReportCardPage() {
   const { data: classes = [], isLoading: classesLoading } = useClassesList();
   const { data: assignedData, isLoading: assignedLoading } = useMyAssignedClasses();
@@ -35,16 +37,18 @@ export default function TeacherReportCardPage() {
 
   // Filter classes teacher is assigned to
   const filteredClasses = useMemo(() => {
-    if (!assignedData) return [];
+    if (!assignedData) return sortClasses(classes);
     const homeroom = assignedData.homeroomClass;
     const assigned = assignedData.assignedClasses || [];
     
-    return classes.filter((cls) => {
+    const list = classes.filter((cls) => {
       const name = cls.name.trim().toLowerCase();
       const isHomeroom = homeroom ? homeroom.trim().toLowerCase() === name : false;
       const isAssigned = assigned.some(c => c.trim().toLowerCase() === name);
       return isHomeroom || isAssigned;
     });
+
+    return sortClasses(list.length > 0 ? list : classes);
   }, [classes, assignedData]);
 
   // Filter exams based on selected class

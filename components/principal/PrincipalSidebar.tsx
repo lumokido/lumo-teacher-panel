@@ -19,6 +19,7 @@ import {
   Award,
   Images,
   HelpCircle,
+  CheckCircle2,
 } from "lucide-react";
 
 const navItems = [
@@ -28,6 +29,7 @@ const navItems = [
   { label: "Classes", href: "/principal/classes", icon: GraduationCap },
   { label: "Exams", href: "/principal/exams", icon: ClipboardList },
   { label: "Report Card", href: "/principal/reportcard", icon: Award },
+  { label: "Marks Approval", href: "/principal/marks-approval", icon: CheckCircle2 },
 
   { label: "Homework", href: "/principal/homework", icon: BookOpen },
   { label: "Quizzes", href: "/principal/quizzes", icon: HelpCircle },

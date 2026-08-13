@@ -8,7 +8,7 @@ import axios, {
 import { Alphores_TOKEN_KEY } from "@/lib/auth/constants";
 import { toast } from "sonner";
 
-  // const API_BASE_URL = "http://localhost:5050/api";
+  // const API_BASE_URL = "http://localhost:5050";
   
   // const API_BASE_URL = "http://localhost:8080";
    const API_BASE_URL = "https://api.lumokido.in";

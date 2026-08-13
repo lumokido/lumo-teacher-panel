@@ -63,10 +63,13 @@ function unwrapSectionList(data: unknown): SectionItem[] {
   return [];
 }
 
+import { sortClasses } from "@/lib/utils/sortClasses";
+
 /** GET /api/admin/classes */
 export async function listClasses(): Promise<ClassItem[]> {
   const res = await api.get("/api/admin/classes");
-  return unwrapClassList(res.data);
+  const rawList = unwrapClassList(res.data);
+  return sortClasses(rawList);
 }
 
 /** POST /api/admin/classes */
@@ -160,6 +163,10 @@ export type AssignedClassesResponse = {
 
 export async function getMyAssignedClasses(): Promise<AssignedClassesResponse> {
   const res = await api.get("/api/admin/my-assigned-classes");
-  return res.data;
+  const data = res.data;
+  if (data && Array.isArray(data.assignedClasses)) {
+    data.assignedClasses = sortClasses(data.assignedClasses);
+  }
+  return data;
 }
 
