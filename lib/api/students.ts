@@ -8,9 +8,6 @@ export type StudentWriteBody = {
   mobileNumber: string;
   fatherName: string;
   motherName: string;
-  fatherAadharNumber: string;
-  motherAadharNumber: string;
-  studentAadharNumber: string;
   dateOfBirth: string;
   gender: string;
   studentClass: string;
@@ -28,9 +25,6 @@ export type StudentRow = {
   mobileNumber?: string;
   fatherName?: string;
   motherName?: string;
-  fatherAadharNumber?: string;
-  motherAadharNumber?: string;
-  studentAadharNumber?: string;
   parentName?: string;
   dateOfBirth?: string;
   gender?: string;
@@ -66,9 +60,6 @@ export function emptyStudentForm(): StudentWriteBody {
     mobileNumber: "",
     fatherName: "",
     motherName: "",
-    fatherAadharNumber: "",
-    motherAadharNumber: "",
-    studentAadharNumber: "",
     dateOfBirth: "",
     gender: "MALE",
     studentClass: "",
@@ -86,9 +77,6 @@ export function rowToForm(row: StudentRow): StudentWriteBody {
     mobileNumber: row.mobileNumber ?? "",
     fatherName: row.fatherName ?? row.parentName ?? "",
     motherName: row.motherName ?? "",
-    fatherAadharNumber: row.fatherAadharNumber ?? "",
-    motherAadharNumber: row.motherAadharNumber ?? "",
-    studentAadharNumber: row.studentAadharNumber ?? "",
     dateOfBirth: row.dateOfBirth ?? "",
     gender: row.gender ?? "MALE",
     studentClass: row.studentClass ?? "",
@@ -160,9 +148,6 @@ export type StudentDetailResponse = {
   mobileNumber: string;
   fatherName?: string;
   motherName?: string;
-  fatherAadharNumber?: string;
-  motherAadharNumber?: string;
-  studentAadharNumber?: string;
   parentName?: string;
   dateOfBirth: string;
   gender: string;

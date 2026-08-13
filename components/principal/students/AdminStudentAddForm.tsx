@@ -183,41 +183,6 @@ export default function AdminStudentAddForm({ className }: Props) {
           </label>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-3">
-          <label className="block text-xs font-semibold text-slate-600">
-            Father Aadhar number
-            <input
-              required
-              disabled={busy}
-              className={inputClass}
-              value={form.fatherAadharNumber}
-              onChange={(e) => setField("fatherAadharNumber", e.target.value)}
-              placeholder="1234-5678-9012"
-            />
-          </label>
-          <label className="block text-xs font-semibold text-slate-600">
-            Mother Aadhar number
-            <input
-              required
-              disabled={busy}
-              className={inputClass}
-              value={form.motherAadharNumber}
-              onChange={(e) => setField("motherAadharNumber", e.target.value)}
-              placeholder="9876-5432-1098"
-            />
-          </label>
-          <label className="block text-xs font-semibold text-slate-600">
-            Student Aadhar number
-            <input
-              required
-              disabled={busy}
-              className={inputClass}
-              value={form.studentAadharNumber}
-              onChange={(e) => setField("studentAadharNumber", e.target.value)}
-              placeholder="1111-2222-3333"
-            />
-          </label>
-        </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
           <label className="block text-xs font-semibold text-slate-600">

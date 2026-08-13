@@ -128,31 +128,7 @@ export function StudentForm({
               disabled={busy}
             />
           </Field>
-          <Field label="Father Aadhar" className="sm:col-span-1">
-            <Input
-              required
-              value={form.fatherAadharNumber}
-              onChange={(e) => setField("fatherAadharNumber", e.target.value)}
-              disabled={busy}
-            />
-          </Field>
-          <Field label="Mother Aadhar" className="sm:col-span-1">
-            <Input
-              required
-              value={form.motherAadharNumber}
-              onChange={(e) => setField("motherAadharNumber", e.target.value)}
-              disabled={busy}
-            />
-          </Field>
-          <Field label="Student Aadhar" className="sm:col-span-2">
-            <Input
-              required
-              value={form.studentAadharNumber}
-              onChange={(e) => setField("studentAadharNumber", e.target.value)}
-              placeholder="1111-2222-3333"
-              disabled={busy}
-            />
-          </Field>
+
           <Field label="Class" className="sm:col-span-1">
             <Input
               required

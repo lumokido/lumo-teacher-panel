@@ -107,10 +107,7 @@ export default function PrivacyPolicyPage() {
               <li>Student name, date of birth, gender, class, section, and roll number</li>
               <li>Contact / mobile numbers</li>
               <li>Parent or guardian names</li>
-              <li>
-                Government identity details such as Aadhaar numbers (student /
-                parent), where provided by the school
-              </li>
+
               <li>Student profile photographs</li>
             </ul>
 
@@ -157,14 +154,10 @@ export default function PrivacyPolicyPage() {
               5. Sensitive personal data
             </h2>
             <p>
-              The App may store sensitive personal data such as Aadhaar numbers
-              when school staff enter them. Such data is used only for school
-              administration as configured by the school. Within the App, Aadhaar
-              numbers are masked by default and revealed only when an authorized
-              user chooses to view them.
+              The App does not collect or store national government identification numbers such as Aadhaar numbers.
             </p>
             <p>
-              School staff are responsible for collecting and handling this data
+              School staff are responsible for collecting and handling any personal data
               in accordance with applicable Indian laws and school policy.
             </p>
           </section>
