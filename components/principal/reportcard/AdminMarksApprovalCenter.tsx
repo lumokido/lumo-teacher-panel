@@ -64,8 +64,8 @@ export default function AdminMarksApprovalCenter() {
 
   // Edit Modal State
   const [editingRecord, setEditingRecord] = useState<MarkRecord | null>(null);
-  const [editScore, setEditScore] = useState<number | "">("");
-  const [editMaxMarks, setEditMaxMarks] = useState<number | "">(100);
+  const [editScore, setEditScore] = useState<number | string>("");
+  const [editMaxMarks, setEditMaxMarks] = useState<number | string>(100);
 
   // Student Report Card Modal State
   const [viewingStudentCard, setViewingStudentCard] = useState<any | null>(null);
@@ -1045,10 +1045,21 @@ export default function AdminMarksApprovalCenter() {
                 <input
                   required
                   type="number"
+                  step="any"
                   min="0"
                   max={editMaxMarks || 100}
                   value={editScore}
-                  onChange={(e) => setEditScore(e.target.value === "" ? "" : Number(e.target.value))}
+                  onChange={(e) => {
+                    const valStr = e.target.value;
+                    if (valStr === "") {
+                      setEditScore("");
+                      return;
+                    }
+                    const num = parseFloat(valStr);
+                    if (!isNaN(num) && num >= 0) {
+                      setEditScore(valStr);
+                    }
+                  }}
                   className="w-full rounded-xl border border-violet-200 bg-white px-3.5 py-2.5 text-base font-bold text-slate-900 outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-200"
                 />
               </div>

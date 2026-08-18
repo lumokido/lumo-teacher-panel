@@ -100,12 +100,12 @@ export default function PrincipalReportCardPage() {
   );
 
   // Local state for the marks entry form
-  const [marksForm, setMarksForm] = useState<{ [subject: string]: number | "" }>({});
+  const [marksForm, setMarksForm] = useState<{ [subject: string]: number | string }>({});
 
   // Populate form state when report card or active student changes
   useEffect(() => {
     if (reportCard && reportCard.subjectMarks && reportCard.subjectMarks.length > 0) {
-      const formState: { [subject: string]: number | "" } = {};
+      const formState: { [subject: string]: number | string } = {};
       subjects.forEach((sub) => {
         const saved = reportCard.subjectMarks.find(
           (sm) => sm.subject.toLowerCase() === sub.subject.toLowerCase()
@@ -114,7 +114,7 @@ export default function PrincipalReportCardPage() {
       });
       setMarksForm(formState);
     } else {
-      const emptyForm: { [subject: string]: number | "" } = {};
+      const emptyForm: { [subject: string]: number | string } = {};
       subjects.forEach((sub) => {
         emptyForm[sub.subject] = "";
       });
@@ -128,9 +128,11 @@ export default function PrincipalReportCardPage() {
     let max = 0;
     subjects.forEach((sub) => {
       const val = marksForm[sub.subject];
-      obtained += typeof val === "number" ? val : 0;
+      const numVal = typeof val === "number" ? val : parseFloat(val as string);
+      obtained += !isNaN(numVal) ? numVal : 0;
       max += sub.maxMarks || 100;
     });
+    obtained = Math.round(obtained * 100) / 100;
     const pct = max > 0 ? (obtained / max) * 100 : 0;
     let grade = "F";
     if (pct >= 90) grade = "A+";
@@ -147,9 +149,9 @@ export default function PrincipalReportCardPage() {
       setMarksForm((f) => ({ ...f, [subject]: "" }));
       return;
     }
-    const val = parseInt(valStr, 10);
+    const val = parseFloat(valStr);
     if (isNaN(val) || val < 0) return;
-    setMarksForm((f) => ({ ...f, [subject]: val }));
+    setMarksForm((f) => ({ ...f, [subject]: valStr }));
   }
 
   // Save current student marks and optionally move to next
@@ -158,9 +160,18 @@ export default function PrincipalReportCardPage() {
 
     // Validate marks obtained does not exceed max marks
     for (const sub of subjects) {
-      const val = marksForm[sub.subject];
-      if (val === "") {
+      const rawVal = marksForm[sub.subject];
+      if (rawVal === "" || rawVal === undefined || rawVal === null) {
         toast.error(`Please enter marks for ${sub.subject}`);
+        return;
+      }
+      const val = typeof rawVal === "number" ? rawVal : parseFloat(String(rawVal));
+      if (isNaN(val)) {
+        toast.error(`Please enter valid marks for ${sub.subject}`);
+        return;
+      }
+      if (val < 0) {
+        toast.error(`Marks for ${sub.subject} cannot be negative`);
         return;
       }
       if (val > sub.maxMarks) {
@@ -170,10 +181,14 @@ export default function PrincipalReportCardPage() {
     }
 
     try {
-      const payloadMarks = subjects.map((sub) => ({
-        subject: sub.subject,
-        marksObtained: marksForm[sub.subject] as number,
-      }));
+      const payloadMarks = subjects.map((sub) => {
+        const rawVal = marksForm[sub.subject];
+        const val = typeof rawVal === "number" ? rawVal : parseFloat(String(rawVal)) || 0;
+        return {
+          subject: sub.subject,
+          marksObtained: val,
+        };
+      });
 
       await saveMarksMut.mutateAsync({
         studentId: activeStudentId,
@@ -533,6 +548,7 @@ export default function PrincipalReportCardPage() {
                                   <input
                                     required
                                     type="number"
+                                    step="any"
                                     min="0"
                                     max={sub.maxMarks}
                                     placeholder="Marks"
