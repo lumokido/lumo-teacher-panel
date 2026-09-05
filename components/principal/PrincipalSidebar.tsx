@@ -20,6 +20,7 @@ import {
   Images,
   HelpCircle,
   CheckCircle2,
+  Bell,
 } from "lucide-react";
 
 const navItems = [
@@ -37,6 +38,7 @@ const navItems = [
   { label: "Teachers", href: "/principal/teachers", icon: Users },
   { label: "Timetable", href: "/principal/timetable", icon: Clock },
   { label: "Announcements & Events", href: "/principal/announcements", icon: Megaphone },
+  { label: "Push Notifications", href: "/principal/notifications", icon: Bell },
   { label: "School Gallery", href: "/principal/gallery", icon: Images },
 ];
 
